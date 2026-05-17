@@ -8,10 +8,10 @@ export default function MoviePage({ params }) {
   const [server, setServer] = useState(0);
   const { id } = use(params);
 
-  const servers = [
-    { name: '▶ Server 1', url: `https://vidsrc.to/embed/movie/${id}` },
-    { name: '▶ Server 2', url: `https://vidsrc.me/embed/movie?tmdb=${id}` },
-    { name: '▶ Server 3', url: `https://multiembed.mov/?video_id=${id}&tmdb=1` },
+const servers = [
+    { name: '▶ Server 1', url: `https://embed.su/embed/movie/${id}` },
+    { name: '▶ Server 2', url: `https://vidsrc.xyz/embed/movie/${id}` },
+    { name: '▶ Server 3', url: `https://2embed.cc/embed/${id}` },
   ];
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function MoviePage({ params }) {
         <div className="player-wrap">
           <div className="player-title">🎬 Now Playing</div>
           <div className="player-frame">
-            <iframe src={servers[server].url} allowFullScreen allow="autoplay; fullscreen" referrerPolicy="no-referrer" />
+            <iframe src={servers[server].url} allowFullScreen allow="autoplay; fullscreen" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups" />
           </div>
           <div className="server-btns">
             {servers.map((s, i) => (
