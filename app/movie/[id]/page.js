@@ -10,8 +10,8 @@ export default function MoviePage({ params }) {
 
 const servers = [
     { name: '▶ Server 1', url: `https://embed.su/embed/movie/${id}` },
-    { name: '▶ Server 2', url: `https://vidsrc.xyz/embed/movie/${id}` },
-    { name: '▶ Server 3', url: `https://2embed.cc/embed/${id}` },
+    { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/movie/${id}` },
+    { name: '▶ Server 3', url: `https://player.smashy.stream/movie/${id}` },
   ];
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const servers = [
         <div className="player-wrap">
           <div className="player-title">🎬 Now Playing</div>
           <div className="player-frame">
-            <iframe src={servers[server].url} allowFullScreen allow="autoplay; fullscreen" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-popups" />
+            <iframe src={servers[server].url} allowFullScreen allow="autoplay; fullscreen" referrerPolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation" />
           </div>
           <div className="server-btns">
             {servers.map((s, i) => (
