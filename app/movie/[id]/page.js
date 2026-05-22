@@ -86,7 +86,7 @@ const servers = [
         </div>
       )}
       <footer>
-        <p>Made with ❤️ using <span>TMDB API</span> • For personal use only</p>
+        <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
     </>
   );
