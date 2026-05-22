@@ -44,7 +44,7 @@ export default async function Home() {
       <Carousel title="Top Rated Movies" items={topRated.results.map(m => ({ ...m, media_type: 'movie' }))} seeAllHref="/movies" />
       <Carousel title="Popular TV Shows" items={popularTV.results.map(t => ({ ...t, media_type: 'tv' }))} seeAllHref="/tv" />
       <footer>
-        <p>Made with ❤️ using <span>TMDB API</span> • For personal use only</p>
+        <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
     </>
   );
