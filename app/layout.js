@@ -1,7 +1,7 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'CineStream - Watch Free Movies & TV Shows',
+  title: 'Hindi & Eng - Watch Free Movies & TV Shows',
   description: 'Watch the latest movies and TV shows online for free.',
 };
 
