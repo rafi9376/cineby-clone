@@ -52,7 +52,7 @@ export default function Navbar() {
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <Link href="/" className="logo">FREE MOVIE WEBSITE</Link>
+      <Link href="/" className="logo">HINDI and English Movie SITE</Link>
       <div className="nav-links">
         <Link href="/">Home</Link>
         <Link href="/movies">Movies</Link>
