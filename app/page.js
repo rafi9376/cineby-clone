@@ -32,7 +32,7 @@ export default function LandingPage() {
       {/* English Movies */}
       <div onClick={() => handleChoice('english')} style={{
         flex: 1,
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/rktDFPbfHfUbArZ6OOOKsXcv0Bm.jpg)',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/mDfJG3LC3Dqb67AZ52x3Z0jU0uB.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
@@ -54,7 +54,7 @@ export default function LandingPage() {
       {/* Indian Movies */}
       <div onClick={() => handleChoice('indian')} style={{
         flex: 1,
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg)',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/nEufeZlyAOLqO6larF8xk4zV9eV.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
@@ -76,7 +76,7 @@ export default function LandingPage() {
       {/* Bangla Movies */}
       <div onClick={() => handleChoice('bangla')} style={{
         flex: 1,
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/9Rq8bNOGV9bJKFMsm0BLPAO5jFd.jpg)',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/cuETFzxJ4iR2H1IAuTUlEh8QL4Z.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
