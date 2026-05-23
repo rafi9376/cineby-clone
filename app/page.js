@@ -54,7 +54,7 @@ export default function LandingPage() {
       {/* Indian Movies */}
       <div onClick={() => handleChoice('indian')} style={{
         flex: 1,
-       backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/kuf6dutpsT0vSVehic3EZIqkOBt.jpg)',
+       backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/i0Y0wP8H6SRgjr6QmuwbtQbS24D.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
