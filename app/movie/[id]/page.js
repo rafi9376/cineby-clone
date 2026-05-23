@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState, use } from 'react';
-import Navbar from '../../components/Navbar';
-import Reviews from '../../components/Reviews';
-import { IMG_ORIGINAL, IMG_BASE } from '../../lib/tmdb';
+import Navbar from '../../../components/Navbar';
+import Reviews from '../../../components/Reviews';
+import { IMG_ORIGINAL, IMG_BASE } from '../../../lib/tmdb';
 
 export default function MoviePage({ params }) {
   const [movie, setMovie] = useState(null);
