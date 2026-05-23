@@ -88,7 +88,8 @@ const servers = [
           </div>
         </div>
       )}
-      <footer>
+      <Reviews movieId={id} />
+        <footer>
         <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
     </>
