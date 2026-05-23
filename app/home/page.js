@@ -1,6 +1,6 @@
 import Navbar from '@/components/Navbar';
 import Carousel from '@/components/Carousel';
-import { getTrending, getPopularMovies, getTopRatedMovies, getPopularTV, IMG_ORIGINAL } from '@/lib/tmdb';
+import { getTrending, getPopularMovies, getTopRatedMovies, getPopularTV, getNowPlaying, IMG_ORIGINAL } from '@/lib/tmdb';
 import Link from 'next/link';
 
 export default async function HomePage() {
