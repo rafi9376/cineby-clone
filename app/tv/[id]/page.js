@@ -9,14 +9,13 @@ export default function TVPage({ params }) {
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const servers = [
-    { name: '▶ Server 1', url: `https://vidsrc.to/embed/tv/${id}` },
+   const { id } = use(params);
     { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/tv/${id}` },
     { name: '▶ Server 3', url: `https://vidsrc.xyz/embed/tv/${id}` },
     { name: '▶ Server 4', url: `https://multiembed.mov/?video_id=${id}&tmdb=1&tv=1` },
     { name: '▶ Server 5', url: `https://autoembed.co/tv/tmdb/${id}` },
   ];
-    { name: '▶ Server 3', url: `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}` },
-  ];
+   
 
   useEffect(() => {
     if (!id) return;
@@ -99,7 +98,7 @@ export default function TVPage({ params }) {
         </div>
       )}
       <footer>
-        <p>Made with ❤️ using <span>TMDB API</span> • For personal use only</p>
+        <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
     </>
   );
