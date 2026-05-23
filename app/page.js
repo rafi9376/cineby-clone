@@ -1,51 +1,98 @@
-import Navbar from '../components/Navbar';
-import Carousel from '../components/Carousel';
-import { getTrending, getPopularMovies, getTopRatedMovies, getPopularTV } from '../lib/tmdb';
-import { IMG_ORIGINAL } from '../lib/tmdb';
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default async function Home() {
-  const [trending, popularMovies, topRated, popularTV] = await Promise.all([
-    getTrending(),
-    getPopularMovies(),
-    getTopRatedMovies(),
-    getPopularTV(),
-  ]);
+export default function LandingPage() {
+  const [showLanding, setShowLanding] = useState(true);
+  const router = useRouter();
 
-  const hero = trending.results[0];
-  const heroTitle = hero.title || hero.name;
-  const heroBg = hero.backdrop_path ? `${IMG_ORIGINAL}${hero.backdrop_path}` : '';
-  const isTV = hero.media_type === 'tv';
-  const heroHref = isTV ? `/tv/${hero.id}` : `/movie/${hero.id}`;
+  useEffect(() => {
+    const chosen = sessionStorage.getItem('category');
+    if (chosen) setShowLanding(false);
+  }, []);
+
+  const handleChoice = (choice) => {
+    sessionStorage.setItem('category', choice);
+    setShowLanding(false);
+    if (choice === 'english') router.push('/home');
+    if (choice === 'indian') router.push('/indian');
+    if (choice === 'bangla') router.push('/bangla');
+  };
+
+  if (!showLanding) return null;
 
   return (
-    <>
-      <Navbar />
-      <section className="hero">
-        <div className="hero-bg" style={{ backgroundImage: `url(${heroBg})` }} />
-        <div className="hero-overlay" />
-        <div className="hero-content">
-          <div className="hero-badge">🔥 Trending Now</div>
-          <h1 className="hero-title">{heroTitle}</h1>
-          <div className="hero-meta">
-            <span className="hero-rating">⭐ {hero.vote_average?.toFixed(1)}</span>
-            <span>{hero.release_date?.slice(0,4) || hero.first_air_date?.slice(0,4)}</span>
-            <span>{isTV ? 'TV Show' : 'Movie'}</span>
-          </div>
-          <p className="hero-desc">{hero.overview}</p>
-          <div className="hero-btns">
-            <Link href={heroHref} className="btn-watch">▶ Watch Now</Link>
-            <Link href={heroHref} className="btn-info">ℹ More Info</Link>
-          </div>
-        </div>
-      </section>
-      <Carousel title="Trending This Week" items={trending.results} seeAllHref="/movies" />
-      <Carousel title="Popular Movies" items={popularMovies.results} seeAllHref="/movies" />
-      <Carousel title="Top Rated Movies" items={topRated.results.map(m => ({ ...m, media_type: 'movie' }))} seeAllHref="/movies" />
-      <Carousel title="Popular TV Shows" items={popularTV.results.map(t => ({ ...t, media_type: 'tv' }))} seeAllHref="/tv" />
-      <footer>
-        <p>© 2026 | Powered by hindimoviestream.xyz</p>
-      </footer>
-    </>
+    <div style={{
+      display: 'flex',
+      height: '100vh',
+      width: '100vw',
+      fontFamily: "'Bebas Neue', sans-serif",
+    }}>
+      {/* English Movies */}
+      <div onClick={() => handleChoice('english')} style={{
+        flex: 1,
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/rktDFPbfHfUbArZ6OOOKsXcv0Bm.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'flex 0.4s ease',
+        borderRight: '2px solid rgba(255,255,255,0.1)',
+      }}
+      onMouseEnter={e => e.currentTarget.style.flex = '1.5'}
+      onMouseLeave={e => e.currentTarget.style.flex = '1'}
+      >
+        <div style={{ fontSize: 60, marginBottom: 16 }}>🎬</div>
+        <h2 style={{ fontSize: 42, color: 'white', letterSpacing: 4, textAlign: 'center' }}>ENGLISH</h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, letterSpacing: 2 }}>MOVIES & TV SHOWS</p>
+      </div>
+
+      {/* Indian Movies */}
+      <div onClick={() => handleChoice('indian')} style={{
+        flex: 1,
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/6CoRTJTmijhBLJTUNoVSUNxZMEI.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'flex 0.4s ease',
+        borderRight: '2px solid rgba(255,255,255,0.1)',
+      }}
+      onMouseEnter={e => e.currentTarget.style.flex = '1.5'}
+      onMouseLeave={e => e.currentTarget.style.flex = '1'}
+      >
+        <div style={{ fontSize: 60, marginBottom: 16 }}>🇮🇳</div>
+        <h2 style={{ fontSize: 42, color: 'white', letterSpacing: 4, textAlign: 'center' }}>INDIAN</h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, letterSpacing: 2 }}>MOVIES & TV SHOWS</p>
+      </div>
+
+      {/* Bangla Movies */}
+      <div onClick={() => handleChoice('bangla')} style={{
+        flex: 1,
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://image.tmdb.org/t/p/original/9Rq8bNOGV9bJKFMsm0BLPAO5jFd.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        transition: 'flex 0.4s ease',
+      }}
+      onMouseEnter={e => e.currentTarget.style.flex = '1.5'}
+      onMouseLeave={e => e.currentTarget.style.flex = '1'}
+      >
+        <div style={{ fontSize: 60, marginBottom: 16 }}>🇧🇩</div>
+        <h2 style={{ fontSize: 42, color: 'white', letterSpacing: 4, textAlign: 'center' }}>BANGLA</h2>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, letterSpacing: 2 }}>MOVIES & NATOK</p>
+      </div>
+    </div>
   );
 }
