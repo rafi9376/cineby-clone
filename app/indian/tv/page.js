@@ -1,7 +1,6 @@
-import Navbar from '../../components/Navbar';
-import Carousel from '../../components/Carousel';
-import { fetchTMDB } from '../../lib/tmdb';
-
+import Navbar from '@/components/Navbar';
+import Carousel from '@/components/Carousel';
+import { fetchTMDB } from '@/lib/tmdb';
 export default async function IndianTVPage() {
   const [hindi, tamil, telugu, malayalam, kannada, bengali] = await Promise.all([
     fetchTMDB('/discover/tv', { with_original_language: 'hi', sort_by: 'popularity.desc' }),
