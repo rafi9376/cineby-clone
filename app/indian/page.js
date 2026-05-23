@@ -1,7 +1,6 @@
-import Navbar from '../components/Navbar';
-import Carousel from '../components/Carousel';
-import { fetchTMDB } from '../lib/tmdb';
-
+import Navbar from '@/components/Navbar';
+import Carousel from '@/components/Carousel';
+import { fetchTMDB } from '@/lib/tmdb';
 export default async function IndianPage() {
   const [bollywood, tollywood, kollywood, malayalam, kannada, punjabi, marathi, bengali] = await Promise.all([
     fetchTMDB('/discover/movie', { with_original_language: 'hi', sort_by: 'popularity.desc' }),
