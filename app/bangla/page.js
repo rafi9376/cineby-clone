@@ -1,6 +1,6 @@
-import Navbar from '../components/Navbar';
-import Carousel from '../components/Carousel';
-import { fetchTMDB } from '../lib/tmdb';
+import Navbar from '@/components/Navbar';
+import Carousel from '@/components/Carousel';
+import { fetchTMDB } from '@/lib/tmdb';
 
 export default async function BanglaPage() {
   const [latest, popular, topRated, action, romance] = await Promise.all([
