@@ -1,13 +1,15 @@
 import Navbar from '../../components/Navbar';
 import MovieCard from '../../components/MovieCard';
 import { getPopularMovies, getTopRatedMovies, fetchTMDB } from '../../lib/tmdb';
+import Link from 'next/link';
 
 export default async function MoviesPage() {
-  const [popular, topRated, action, comedy] = await Promise.all([
+  const [popular, topRated, action, comedy, bollywood] = await Promise.all([
     getPopularMovies(),
     getTopRatedMovies(),
     fetchTMDB('/discover/movie', { with_genres: '28', sort_by: 'popularity.desc' }),
     fetchTMDB('/discover/movie', { with_genres: '35', sort_by: 'popularity.desc' }),
+    fetchTMDB('/discover/movie', { with_original_language: 'hi', sort_by: 'popularity.desc' }),
   ]);
 
   const tag = m => ({ ...m, media_type: 'movie' });
@@ -18,10 +20,16 @@ export default async function MoviesPage() {
     ...comedy.results.map(tag),
   ].filter((m, i, arr) => arr.findIndex(x => x.id === m.id) === i);
 
+  const bollywoodMovies = bollywood.results.map(tag);
+
   return (
     <>
       <Navbar />
       <div style={{ paddingTop: 80, padding: '80px 40px' }}>
+        <div style={{ display: 'flex', gap: 16, marginBottom: 30 }}>
+          <Link href="/movies" style={{ color: 'var(--accent)', fontWeight: 700, fontSize: 18 }}>All Movies</Link>
+          <Link href="/movies/bollywood" style={{ color: 'var(--muted)', fontWeight: 700, fontSize: 18 }}>🎬 Bollywood</Link>
+        </div>
         <h1 style={{ marginBottom: 30, fontSize: 28 }}>All Movies</h1>
         <div className="results-grid">
           {allMovies.map(item => <MovieCard key={item.id} item={item} />)}
