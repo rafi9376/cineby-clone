@@ -1,6 +1,6 @@
-import Navbar from '../../../components/Navbar';
-import MovieCard from '../../../components/MovieCard';
-import { fetchTMDB } from '../../../lib/tmdb';
+import Navbar from '@/components/Navbar';
+import MovieCard from '@/components/MovieCard';
+import { getPopularMovies, getTopRatedMovies, fetchTMDB } from '@/lib/tmdb';
 import Link from 'next/link';
 
 export default async function BollywoodPage() {
