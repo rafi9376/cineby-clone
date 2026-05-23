@@ -4,7 +4,7 @@ import { getTrending, getPopularMovies, getTopRatedMovies, getPopularTV, getNowP
 import Link from 'next/link';
 
 export default async function HomePage() {
-  const [trending, popularMovies, topRated, popularTV] = await Promise.all([
+  const [trending, popularMovies, topRated, popularTV, nowPlaying] = await Promise.all([
     getTrending(),
     getPopularMovies(),
     getTopRatedMovies(),
