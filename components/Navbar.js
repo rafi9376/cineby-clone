@@ -21,7 +21,7 @@ export default function Navbar() {
 
   return (
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} style={{ height: 70 }}>
-      <Link href="/" className="logo" style={{ fontSize: 26 }}>CineStream</Link>
+      <Link href="/" className="logo" style={{ fontSize: 26 }}>HindiMovieStream</Link>
       <div className="nav-links" style={{ gap: 24 }}>
         <Link href="/home" style={{ fontSize: 15 }}>Home</Link>
         <Link href="/movies" style={{ fontSize: 15 }}>English Movies</Link>
