@@ -9,6 +9,7 @@ export default async function HomePage() {
     getPopularMovies(),
     getTopRatedMovies(),
     getPopularTV(),
+  getNowPlaying(),
   ]);
 
   const hero = trending.results[0];
@@ -41,6 +42,7 @@ export default async function HomePage() {
         </div>
       </section>
       <Carousel title="Trending This Week" items={trending.results} seeAllHref="/movies" />
+      <Carousel title="Latest Releases" items={nowPlaying.results} seeAllHref="/movies" />
       <Carousel title="Popular Movies" items={popularMovies.results} seeAllHref="/movies" />
       <Carousel title="Top Rated Movies" items={topRated.results.map(m => ({ ...m, media_type: 'movie' }))} seeAllHref="/movies" />
       <Carousel title="Popular TV Shows" items={popularTV.results.map(t => ({ ...t, media_type: 'tv' }))} seeAllHref="/tv" />
