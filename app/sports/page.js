@@ -1,7 +1,6 @@
-import Navbar from '../components/Navbar';
-import Carousel from '../components/Carousel';
-import { fetchTMDB } from '../lib/tmdb';
-
+import Navbar from '@/components/Navbar';
+import Carousel from '@/components/Carousel';
+import { fetchTMDB } from '@/lib/tmdb';
 export default async function SportsPage() {
   const [cricket, football, basketball, tennis, formula1, wrestling, boxing, olympics] = await Promise.all([
     fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '6073', sort_by: 'popularity.desc' }),
