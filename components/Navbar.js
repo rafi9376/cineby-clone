@@ -96,25 +96,25 @@ export default function Navbar() {
           <span style={{ fontSize: 22 }}>🏠</span>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
         </Link>
-        <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', width: 90 }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
             placeholder="Search..."
             value={query}
             onChange={e => setQuery(e.target.value)}
             style={{
-              width: '90px', background: '#1a1a26',
+              width: '80px', background: '#1a1a26',
               border: '1px solid #e50914', borderRadius: 8,
               padding: '5px 6px', color: 'white',
               fontSize: 11, fontFamily: 'inherit', outline: 'none',
             }}
           />
         </form>
-        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 8px', width: 90, minWidth: 90 }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#f5c518', lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap' }}>চাকরি খুঁজছেন?</span>
-          <span style={{ fontSize: 9, fontWeight: 700, color: '#e50914', lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap' }}>Download Shomvob App</span>
+        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '3px 5px', width: 85, overflow: 'hidden' }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#f5c518', lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>চাকরি খুঁজছেন?</span>
+          <span style={{ fontSize: 8, fontWeight: 700, color: '#e50914', lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>Download Shomvob</span>
         </a>
-        <button onClick={() => setShowPhone(!showPhone)} style={{ background: 'none', border: '1px solid #e50914', borderRadius: 6, color: '#e50914', fontSize: 9, fontWeight: 700, cursor: 'pointer', padding: '4px 6px', textAlign: 'center', lineHeight: 1.3, fontFamily: 'inherit', width: 64, position: 'relative' }}>
+        <button onClick={() => setShowPhone(!showPhone)} style={{ background: 'none', border: '1px solid #e50914', borderRadius: 6, color: '#e50914', fontSize: 8, fontWeight: 700, cursor: 'pointer', padding: '4px 5px', textAlign: 'center', lineHeight: 1.3, fontFamily: 'inherit', width: 58, position: 'relative', marginLeft: 'auto' }}>
           Click to place ad
           {showPhone && (
             <div style={{ position: 'absolute', bottom: 52, right: 0, background: '#e50914', color: 'white', padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
