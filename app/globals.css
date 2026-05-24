@@ -475,31 +475,29 @@ footer span { color: var(--accent); }
   position: fixed;
   right: 0;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) rotate(180deg);
   z-index: 999;
   background: #e50914;
   color: white;
   font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 14px 10px;
-  border-radius: 8px 0 0 8px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 18px 12px;
+  border-radius: 10px 0 0 10px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  transform: translateY(-50%) rotate(180deg);
   text-decoration: none;
-  box-shadow: -4px 0 20px rgba(229,9,20,0.4);
+  box-shadow: -4px 0 24px rgba(229,9,20,0.6);
   transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  border: 2px solid #ff4444;
+  border-right: none;
 }
 .floating-download:hover {
   background: #ff1a25;
-  padding-right: 14px;
-  box-shadow: -6px 0 28px rgba(229,9,20,0.6);
+  padding-left: 18px;
+  box-shadow: -8px 0 32px rgba(229,9,20,0.8);
 }
 @media (max-width: 768px) {
-  .floating-download { font-size: 11px; padding: 10px 8px; }
+  .floating-download { font-size: 12px; padding: 14px 10px; }
 }
