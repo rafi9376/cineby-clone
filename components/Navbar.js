@@ -120,13 +120,7 @@ export default function Navbar() {
 
       {/* ── FLOATING DOWNLOAD BUTTON ── */}
       
-        href="https://drive.google.com/uc?export=download&id=1G5ij7HC_05tnBYqMooqYxBlSXO2BsE9R"
-        className="floating-download"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        📱 Download App
-      </a>
+        <a href="https://drive.google.com/uc?export=download&id=1G5ij7HC_05tnBYqMooqYxBlSXO2BsE9R" className="floating-download" target="_blank" rel="noopener noreferrer">📱 Download App</a>
     </>
   );
 }
