@@ -7,6 +7,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState('');
   const [showPhone, setShowPhone] = useState(false);
+  const [showShomvob, setShowShomvob] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -33,6 +34,7 @@ export default function Navbar() {
 
   return (
     <>
+      {/* ── DESKTOP NAVBAR ── */}
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} style={{ height: 70 }}>
         <Link href="/" className="logo" style={{ fontSize: 26 }}>HindiMovieStream</Link>
         <div className="nav-links" style={{ gap: 24 }}>
@@ -51,10 +53,33 @@ export default function Navbar() {
         </form>
       </nav>
 
+      {/* ── WEB SHOMVOB BANNER ── */}
+      {showShomvob && (
+        
+          href="https://play.google.com/store/apps/details?id=com.shomvob.app&hl=en"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shomvob-banner"
+          onClick={e => e.stopPropagation()}
+        >
+          <span className="shomvob-banner-icon">💼</span>
+          <div className="shomvob-banner-text">
+            <span className="shomvob-banner-title">চাকরি খুঁজছেন?</span>
+            <span className="shomvob-banner-sub">Download Shomvob App</span>
+          </div>
+          <button
+            className="shomvob-banner-close"
+            onClick={e => { e.preventDefault(); e.stopPropagation(); setShowShomvob(false); }}
+          >✕</button>
+        </a>
+      )}
+
+      {/* ── MOBILE TOP BAR ── */}
       <div className="mobile-top-bar">
         <Link href="/" className="logo" style={{ fontSize: 18, letterSpacing: 1 }}>HindiMovieStream</Link>
       </div>
 
+      {/* ── MOBILE FILTER PILLS ── */}
       <div className="mobile-pills">
         <div className="pills-row">
           {pills.slice(0, 4).map(p => (
@@ -68,25 +93,47 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* ── MOBILE BOTTOM NAV ── */}
       <div className="mobile-bottom-nav">
         <Link href="/home" className="mobile-bottom-item">
           <span style={{ fontSize: 22 }}>🏠</span>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
         </Link>
+
+        {/* Search bar — smaller */}
         <form onSubmit={handleSearch} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
-            placeholder="Search movies, shows..."
+            placeholder="Search..."
             value={query}
             onChange={e => setQuery(e.target.value)}
             style={{
               flex: 1, background: '#1a1a26',
               border: '1px solid #e50914', borderRadius: 8,
-              padding: '8px 12px', color: 'white',
-              fontSize: 13, fontFamily: 'inherit', outline: 'none',
+              padding: '6px 8px', color: 'white',
+              fontSize: 12, fontFamily: 'inherit', outline: 'none',
             }}
           />
         </form>
+
+        {/* Shomvob Ad — mobile */}
+        
+          href="https://play.google.com/store/apps/details?id=com.shomvob.app&hl=en"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={e => e.stopPropagation()}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', textDecoration: 'none',
+            background: '#1a1a26', border: '1px solid #e50914',
+            borderRadius: 8, padding: '4px 6px', maxWidth: 70,
+          }}
+        >
+          <span style={{ fontSize: 8, fontWeight: 700, color: '#f5c518', lineHeight: 1.3, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
+          <span style={{ fontSize: 7, fontWeight: 600, color: '#e50914', lineHeight: 1.3, textAlign: 'center' }}>Download Shomvob App</span>
+        </a>
+
+        {/* Place ad CTA */}
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {showPhone && (
             <div style={{
@@ -115,6 +162,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* ── FLOATING DOWNLOAD BUTTON ── */}
       <a href="https://raw.githubusercontent.com/rafi9376/cineby-clone/main/app-debug.apk" className="floating-download" target="_blank" rel="noopener noreferrer">📱 Download App</a>
     </>
   );
