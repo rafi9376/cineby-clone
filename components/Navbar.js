@@ -91,7 +91,6 @@ export default function Navbar() {
       </div>
 
       {/* ── MOBILE BOTTOM NAV ── */}
-      {/* ── MOBILE BOTTOM NAV ── */}
       <div className="mobile-bottom-nav">
         <Link href="/home" className="mobile-bottom-item">
           <span style={{ fontSize: 22 }}>🏠</span>
@@ -123,39 +122,6 @@ export default function Navbar() {
             </div>
           )}
         </button>
-      </div>
-        <Link href="/home" className="mobile-bottom-item">
-          <span style={{ fontSize: 22 }}>🏠</span>
-          <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
-        </Link>
-        <form onSubmit={handleSearch} style={{ flex: 0, display: 'flex', alignItems: 'center' }}>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            style={{
-              width: '80px', background: '#1a1a26',
-              border: '1px solid #e50914', borderRadius: 8,
-              padding: '5px 6px', color: 'white',
-              fontSize: 11, fontFamily: 'inherit', outline: 'none',
-            }}
-          />
-        </form>
-        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 8px', maxWidth: 80, minWidth: 75 }}>
-          <span style={{ fontSize: 11, fontWeight: 800, color: '#f5c518', lineHeight: 1.4, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
-          <span style={{ fontSize: 9, fontWeight: 700, color: '#e50914', lineHeight: 1.4, textAlign: 'center' }}>Download Shomvob App</span>
-        </a>
-        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {showPhone && (
-            <div style={{ position: 'absolute', bottom: 52, right: 0, background: '#e50914', color: 'white', padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
-              📞 01742472169
-            </div>
-          )}
-          <button onClick={() => setShowPhone(!showPhone)} style={{ background: 'none', border: '1px solid #e50914', borderRadius: 6, color: '#e50914', fontSize: 9, fontWeight: 700, cursor: 'pointer', padding: '4px 6px', textAlign: 'center', lineHeight: 1.3, fontFamily: 'inherit', maxWidth: 64 }}>
-            Click to place ad
-          </button>
-        </div>
       </div>
 
       {/* ── FLOATING DOWNLOAD BUTTON ── */}
