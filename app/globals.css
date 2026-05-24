@@ -374,3 +374,53 @@ footer span { color: var(--accent); }
   font-size: 32px; letter-spacing: 4px; color: var(--accent);
   background: var(--bg);
 }
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+    height: 56px;
+  }
+  .logo { font-size: 20px; }
+  .nav-links { display: none; }
+  .search-input { width: 130px; }
+
+  .hero {
+    height: 70vh;
+    min-height: 480px;
+    padding-bottom: 40px;
+  }
+  .hero-content { padding: 0 20px; }
+  .hero-title { font-size: 42px; }
+  .hero-desc { font-size: 13px; }
+  .hero-btns { gap: 10px; }
+  .btn-watch, .btn-info { padding: 11px 20px; font-size: 13px; }
+
+  .section { padding: 24px 0; }
+  .section-header { padding: 0 16px; margin-bottom: 14px; }
+  .section-title { font-size: 20px; }
+  .carousel { padding: 8px 16px 16px; gap: 10px; }
+  .card { flex: 0 0 120px; }
+
+  .detail-content {
+    padding: 0 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .detail-poster { flex: 0 0 120px; width: 120px; }
+  .detail-title { font-size: 32px; }
+  .detail-overview { font-size: 13px; }
+
+  .player-section { padding: 24px 16px; }
+  .cast-section { padding: 24px 16px; }
+
+  .search-page { padding: 80px 16px 40px; }
+  .results-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+
+  footer { padding: 24px 16px; }
+
+  div[style*="padding: '40px 64px'"],
+  div[style*="padding: '48px 64px'"] {
+    padding: 24px 16px !important;
+  }
+}
