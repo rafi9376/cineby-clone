@@ -408,6 +408,12 @@ footer span { color: var(--accent); }
 .pill:hover, .pill:active {
   background: #e50914; color: white; border-color: #e50914;
 }
+.pill-active {
+  background: #e50914 !important;
+  color: white !important;
+  border-color: #e50914 !important;
+}
+}
 
 /* ── MOBILE BOTTOM NAV ── */
 .mobile-bottom-nav {
