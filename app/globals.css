@@ -377,50 +377,58 @@ footer span { color: var(--accent); }
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 768px) {
   .navbar {
-    padding: 0 16px;
-    height: 56px;
+    padding: 0 12px;
+    height: 52px;
+    gap: 8px;
   }
-  .logo { font-size: 20px; }
+  .logo { font-size: 16px; letter-spacing: 1px; }
   .nav-links { display: none; }
-  .search-input { width: 130px; }
+  .search-form { flex: 1; max-width: 160px; }
+  .search-input { width: 100%; padding: 7px 10px; font-size: 13px; }
+  .search-btn { padding: 7px 10px; font-size: 13px; }
 
   .hero {
-    height: 70vh;
-    min-height: 480px;
-    padding-bottom: 40px;
+    height: 65vh;
+    min-height: 420px;
+    padding-bottom: 32px;
   }
-  .hero-content { padding: 0 20px; }
-  .hero-title { font-size: 42px; }
-  .hero-desc { font-size: 13px; }
-  .hero-btns { gap: 10px; }
-  .btn-watch, .btn-info { padding: 11px 20px; font-size: 13px; }
+  .hero-content { padding: 0 16px; max-width: 100%; }
+  .hero-title { font-size: 36px; }
+  .hero-desc { font-size: 13px; margin-bottom: 20px; }
+  .hero-btns { gap: 8px; }
+  .btn-watch, .btn-info { padding: 10px 18px; font-size: 13px; }
 
-  .section { padding: 24px 0; }
-  .section-header { padding: 0 16px; margin-bottom: 14px; }
-  .section-title { font-size: 20px; }
-  .carousel { padding: 8px 16px 16px; gap: 10px; }
-  .card { flex: 0 0 120px; }
+  .section { padding: 20px 0; }
+  .section-header { padding: 0 12px; margin-bottom: 12px; }
+  .section-title { font-size: 18px; letter-spacing: 1.5px; }
+  .see-all { font-size: 11px; padding: 5px 12px; }
+  .carousel { padding: 6px 12px 14px; gap: 8px; }
+  .card { flex: 0 0 105px; border-radius: 8px; }
 
+  .detail-hero { min-height: 50vh; padding-bottom: 24px; }
   .detail-content {
     padding: 0 16px;
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    gap: 14px;
   }
-  .detail-poster { flex: 0 0 120px; width: 120px; }
-  .detail-title { font-size: 32px; }
-  .detail-overview { font-size: 13px; }
+  .detail-poster { flex: 0 0 110px; width: 110px; }
+  .detail-title { font-size: 28px; }
+  .detail-meta { font-size: 12px; gap: 8px; }
+  .detail-overview { font-size: 13px; margin-bottom: 16px; }
 
-  .player-section { padding: 24px 16px; }
-  .cast-section { padding: 24px 16px; }
+  .player-section { padding: 20px 12px; }
+  .player-title { font-size: 18px; }
+  .server-btns { gap: 8px; }
+  .server-btn { padding: 7px 14px; font-size: 12px; }
 
-  .search-page { padding: 80px 16px 40px; }
-  .results-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+  .cast-section { padding: 20px 12px; }
+  .cast-img { width: 64px; height: 64px; }
+  .cast-name { font-size: 11px; }
+  .cast-char { font-size: 10px; }
 
-  footer { padding: 24px 16px; }
+  .search-page { padding: 72px 12px 32px; }
+  .results-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); gap: 10px; }
 
-  div[style*="padding: '40px 64px'"],
-  div[style*="padding: '48px 64px'"] {
-    padding: 24px 16px !important;
-  }
+  footer { padding: 20px 12px; font-size: 12px; }
 }
