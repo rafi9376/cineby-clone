@@ -47,7 +47,7 @@ export default async function HomePage() {
         <div className="hero-overlay" />
         <div className="detail-content">
           <div className="detail-info">
-            <div className="hero-badge">🔥 Trending Now</div>
+            <div className="hero-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#e50914', color: 'white', fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', padding: '5px 14px', borderRadius: 4, marginBottom: 20, width: 'fit-content' }}>🔥 Trending Now</div>
             <h1 className="hero-title">{heroTitle}</h1>
             <div className="hero-meta">
               <span style={{ color: '#f5c518' }}>⭐ {hero.vote_average?.toFixed(1)}</span>
