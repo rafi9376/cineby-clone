@@ -52,22 +52,16 @@ export default function Navbar() {
           <button className="search-btn" type="submit">🔍</button>
         </form>
       </nav>
-
-      {/* ── WEB SHOMVOB BANNER ── */}
-      {showShomvob && (
-        
-          href="https://play.google.com/store/apps/details?id=com.shomvob.app&amp;hl=en"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shomvob-banner"
-          onClick={e => e.stopPropagation()}
-        >
+{showShomvob && (
+        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" className="shomvob-banner" onClick={e => e.stopPropagation()}>
           <span className="shomvob-banner-icon">💼</span>
           <div className="shomvob-banner-text">
             <span className="shomvob-banner-title">চাকরি খুঁজছেন?</span>
             <span className="shomvob-banner-sub">Download Shomvob App</span>
           </div>
-          <button
+          <button className="shomvob-banner-close" onClick={e => { e.preventDefault(); e.stopPropagation(); setShowShomvob(false); }}>✕</button>
+        </a>
+      )}
             className="shomvob-banner-close"
             onClick={e => { e.preventDefault(); e.stopPropagation(); setShowShomvob(false); }}
           >✕</button>
