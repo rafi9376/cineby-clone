@@ -374,24 +374,67 @@ footer span { color: var(--accent); }
   font-size: 32px; letter-spacing: 4px; color: var(--accent);
   background: var(--bg);
 }
+/* ── MOBILE TOP BAR ── */
+.mobile-top-bar {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 101;
+  background: #0a0a14;
+  border-bottom: 2px solid #e50914;
+  padding: 10px 16px;
+  align-items: center;
+}
+
+/* ── MOBILE FILTER PILLS ── */
+.mobile-pills {
+  display: none;
+  position: fixed; top: 46px; left: 0; right: 0; z-index: 100;
+  background: #0d0d1a;
+  border-bottom: 1px solid #ffffff0f;
+  padding: 6px 10px;
+  flex-direction: column; gap: 5px;
+}
+.pills-row {
+  display: flex; gap: 5px;
+}
+.pill {
+  flex: 1; text-align: center;
+  padding: 5px 2px; border-radius: 20px;
+  font-size: 10px; font-weight: 600;
+  background: #1a1a26;
+  border: 1px solid #ffffff15;
+  color: #c0c0d8; white-space: nowrap;
+  transition: all 0.2s;
+}
+.pill:hover, .pill:active {
+  background: #e50914; color: white; border-color: #e50914;
+}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0; z-index: 100;
+  background: #0a0a14;
+  border-top: 2px solid #e50914;
+  padding: 8px 10px;
+  align-items: center; gap: 8px;
+}
+.mobile-bottom-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 2px;
+  color: #e50914; text-decoration: none;
+  min-width: 44px;
+}
+
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 768px) {
-  .navbar {
-    padding: 0 12px;
-    height: 52px;
-    gap: 8px;
-  }
-  .logo { font-size: 16px; letter-spacing: 1px; }
-  .nav-links { display: none; }
-  .search-form { flex: 1; max-width: 160px; }
-  .search-input { width: 100%; padding: 7px 10px; font-size: 13px; }
-  .search-btn { padding: 7px 10px; font-size: 13px; }
+  .navbar { display: none !important; }
+  .mobile-top-bar { display: flex !important; }
+  .mobile-pills { display: flex !important; }
+  .mobile-bottom-nav { display: flex !important; }
+  body { padding-top: 120px; padding-bottom: 72px; }
 
-  .hero {
-    height: 65vh;
-    min-height: 420px;
-    padding-bottom: 32px;
-  }
+  .hero { height: 65vh; min-height: 420px; padding-bottom: 32px; }
   .hero-content { padding: 0 16px; max-width: 100%; }
   .hero-title { font-size: 36px; }
   .hero-desc { font-size: 13px; margin-bottom: 20px; }
@@ -406,12 +449,7 @@ footer span { color: var(--accent); }
   .card { flex: 0 0 105px; border-radius: 8px; }
 
   .detail-hero { min-height: 50vh; padding-bottom: 24px; }
-  .detail-content {
-    padding: 0 16px;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-  }
+  .detail-content { padding: 0 16px; flex-direction: column; align-items: flex-start; gap: 14px; }
   .detail-poster { flex: 0 0 110px; width: 110px; }
   .detail-title { font-size: 28px; }
   .detail-meta { font-size: 12px; gap: 8px; }
