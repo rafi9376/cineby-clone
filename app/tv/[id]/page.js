@@ -2,6 +2,7 @@
 import { useEffect, useState, use } from 'react';
 import Navbar from '../../../components/Navbar';
 import { IMG_ORIGINAL, IMG_BASE } from '../../../lib/tmdb';
+import Reviews from '../../../components/Reviews';
 
 export default function TVPage({ params }) {
   const [show, setShow] = useState(null);
@@ -97,6 +98,7 @@ export default function TVPage({ params }) {
           </div>
         </div>
       )}
+      <Reviews movieId={id} />
       <footer>
         <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
