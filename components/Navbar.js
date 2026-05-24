@@ -110,7 +110,7 @@ export default function Navbar() {
             }}
           />
         </form>
-        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ flex: '0 0 90px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 6px', height: 44 }}>
+        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ flex: '0 0 100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 6px', height: 44 }}>
           <span style={{ fontSize: 11, fontWeight: 800, color: '#f5c518', lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap' }}>চাকরি খুঁজছেন?</span>
           <span style={{ fontSize: 9, fontWeight: 700, color: '#e50914', lineHeight: 1.3, textAlign: 'center', whiteSpace: 'nowrap' }}>Download Shomvob</span>
         </a>
