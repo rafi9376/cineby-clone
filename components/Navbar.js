@@ -96,14 +96,14 @@ export default function Navbar() {
           <span style={{ fontSize: 22 }}>🏠</span>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
         </Link>
-        <form onSubmit={handleSearch} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+        <form onSubmit={handleSearch} style={{ flex: 0, display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
             placeholder="Search..."
             value={query}
             onChange={e => setQuery(e.target.value)}
             style={{
-              flex: 1, background: '#1a1a26',
+              width: '80px', background: '#1a1a26',
               border: '1px solid #e50914', borderRadius: 8,
               padding: '5px 6px', color: 'white',
               fontSize: 11, fontFamily: 'inherit', outline: 'none',
