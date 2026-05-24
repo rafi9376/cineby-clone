@@ -22,6 +22,12 @@ export default function Navbar() {
     if (query.trim()) router.push(`/search?q=${encodeURIComponent(query.trim())}`);
   };
 
+  const handleCloseShomvob = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowShomvob(false);
+  };
+
   const pills = [
     { label: 'Eng Movies', href: '/movies' },
     { label: 'Eng TV Shows', href: '/tv' },
@@ -52,19 +58,16 @@ export default function Navbar() {
           <button className="search-btn" type="submit">🔍</button>
         </form>
       </nav>
-{showShomvob && (
+
+      {/* ── WEB SHOMVOB BANNER ── */}
+      {showShomvob && (
         <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" className="shomvob-banner" onClick={e => e.stopPropagation()}>
           <span className="shomvob-banner-icon">💼</span>
           <div className="shomvob-banner-text">
             <span className="shomvob-banner-title">চাকরি খুঁজছেন?</span>
             <span className="shomvob-banner-sub">Download Shomvob App</span>
           </div>
-          <button className="shomvob-banner-close" onClick={e => { e.preventDefault(); e.stopPropagation(); setShowShomvob(false); }}>✕</button>
-        </a>
-      )}
-            className="shomvob-banner-close"
-            onClick={e => { e.preventDefault(); e.stopPropagation(); setShowShomvob(false); }}
-          >✕</button>
+          <button className="shomvob-banner-close" onClick={handleCloseShomvob}>✕</button>
         </a>
       )}
 
@@ -93,8 +96,6 @@ export default function Navbar() {
           <span style={{ fontSize: 22 }}>🏠</span>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
         </Link>
-
-        {/* Search bar — smaller */}
         <form onSubmit={handleSearch} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
@@ -109,48 +110,17 @@ export default function Navbar() {
             }}
           />
         </form>
-
-        {/* Shomvob Ad — mobile */}
-        
-          href="https://play.google.com/store/apps/details?id=com.shomvob.app&hl=en"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={e => e.stopPropagation()}
-          style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', textDecoration: 'none',
-            background: '#1a1a26', border: '1px solid #e50914',
-            borderRadius: 8, padding: '4px 6px', maxWidth: 70,
-          }}
-        >
+        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #e50914', borderRadius: 8, padding: '4px 6px', maxWidth: 70 }}>
           <span style={{ fontSize: 8, fontWeight: 700, color: '#f5c518', lineHeight: 1.3, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
           <span style={{ fontSize: 7, fontWeight: 600, color: '#e50914', lineHeight: 1.3, textAlign: 'center' }}>Download Shomvob App</span>
         </a>
-
-        {/* Place ad CTA */}
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {showPhone && (
-            <div style={{
-              position: 'absolute', bottom: 52, right: 0,
-              background: '#e50914', color: 'white',
-              padding: '6px 12px', borderRadius: 8,
-              fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-            }}>
+            <div style={{ position: 'absolute', bottom: 52, right: 0, background: '#e50914', color: 'white', padding: '6px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', boxShadow: '0 4px 16px rgba(0,0,0,0.5)' }}>
               📞 01742472169
             </div>
           )}
-          <button
-            onClick={() => setShowPhone(!showPhone)}
-            style={{
-              background: 'none', border: '1px solid #e50914',
-              borderRadius: 6, color: '#e50914',
-              fontSize: 9, fontWeight: 700, cursor: 'pointer',
-              padding: '4px 6px', textAlign: 'center',
-              lineHeight: 1.3, fontFamily: 'inherit',
-              maxWidth: 64,
-            }}
-          >
+          <button onClick={() => setShowPhone(!showPhone)} style={{ background: 'none', border: '1px solid #e50914', borderRadius: 6, color: '#e50914', fontSize: 9, fontWeight: 700, cursor: 'pointer', padding: '4px 6px', textAlign: 'center', lineHeight: 1.3, fontFamily: 'inherit', maxWidth: 64 }}>
             Click to place ad
           </button>
         </div>
