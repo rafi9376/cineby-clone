@@ -1,3 +1,7 @@
+export const metadata = {
+  title: 'Hindi & Eng - Watch Free Movies & TV Shows',
+  description: 'Watch the latest movies and TV shows online for free.',
+};
 import Navbar from '@/components/Navbar';
 import Carousel from '@/components/Carousel';
 import { getTrending, getPopularMovies, getTopRatedMovies, getPopularTV, getNowPlaying, IMG_ORIGINAL } from '@/lib/tmdb';
