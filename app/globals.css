@@ -433,6 +433,7 @@ footer span { color: var(--accent); }
 
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 768px) {
+  .mobile-bottom-nav { flex-direction: row !important; align-items: center !important; }
   .navbar { display: none !important; }
   .mobile-top-bar { display: flex !important; }
   .mobile-pills { display: flex !important; }
