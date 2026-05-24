@@ -506,3 +506,34 @@ footer span { color: var(--accent); }
 @media (max-width: 768px) {
   .floating-download { font-size: 12px; padding: 14px 10px; }
 }
+/* ── SHOMVOB BANNER (WEB) ── */
+.shomvob-banner {
+  position: fixed;
+  bottom: 0; left: 0;
+  z-index: 998;
+  display: flex; align-items: center; gap: 10px;
+  background: #0e0e1a;
+  border: 1px solid #e50914;
+  border-radius: 0 12px 0 0;
+  padding: 10px 16px;
+  text-decoration: none;
+  box-shadow: 0 -4px 20px rgba(229,9,20,0.2);
+  transition: all 0.2s;
+}
+.shomvob-banner:hover { background: #161624; }
+.shomvob-banner-icon { font-size: 24px; }
+.shomvob-banner-text { display: flex; flex-direction: column; gap: 2px; }
+.shomvob-banner-title { font-size: 13px; font-weight: 700; color: #f5c518; }
+.shomvob-banner-sub { font-size: 12px; font-weight: 600; color: #e50914; }
+.shomvob-banner-close {
+  background: none; border: none; color: #888;
+  font-size: 16px; cursor: pointer; padding: 4px 8px;
+  margin-left: 8px; border-radius: 4px;
+  transition: color 0.2s;
+}
+.shomvob-banner-close:hover { color: white; }
+
+@media (max-width: 768px) {
+  .shomvob-banner { display: none !important; }
+  .mobile-bottom-nav { height: 64px; }
+}
