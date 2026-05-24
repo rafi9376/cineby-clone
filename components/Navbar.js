@@ -124,6 +124,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-    </>
+    <a href="https://drive.google.com/uc?export=download&id=1G5ij7HC_05tnBYqMooqYxBlSXO2BsE9R" className="floating-download" target="_blank" rel="noopener noreferrer">📱 Download App</a>
+              </>
   );
 }
