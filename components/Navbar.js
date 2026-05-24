@@ -105,14 +105,14 @@ export default function Navbar() {
             style={{
               flex: 1, background: '#1a1a26',
               border: '1px solid #e50914', borderRadius: 8,
-              padding: '6px 8px', color: 'white',
-              fontSize: 12, fontFamily: 'inherit', outline: 'none',
+              padding: '5px 6px', color: 'white',
+              fontSize: 11, fontFamily: 'inherit', outline: 'none',
             }}
           />
         </form>
-        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #e50914', borderRadius: 8, padding: '4px 6px', maxWidth: 70 }}>
-          <span style={{ fontSize: 8, fontWeight: 700, color: '#f5c518', lineHeight: 1.3, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
-          <span style={{ fontSize: 7, fontWeight: 600, color: '#e50914', lineHeight: 1.3, textAlign: 'center' }}>Download Shomvob App</span>
+        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 8px', maxWidth: 80, minWidth: 75 }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: '#f5c518', lineHeight: 1.4, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
+          <span style={{ fontSize: 9, fontWeight: 700, color: '#e50914', lineHeight: 1.4, textAlign: 'center' }}>Download Shomvob App</span>
         </a>
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {showPhone && (
