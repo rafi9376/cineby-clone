@@ -58,13 +58,11 @@ export default function Navbar() {
 
       {/* ── MOBILE FILTER PILLS ── */}
       <div className="mobile-pills">
-        {/* Row 1 */}
         <div className="pills-row">
           {pills.slice(0, 4).map(p => (
             <Link key={p.href} href={p.href} className="pill">{p.label}</Link>
           ))}
         </div>
-        {/* Row 2 */}
         <div className="pills-row">
           {pills.slice(4).map(p => (
             <Link key={p.href} href={p.href} className="pill">{p.label}</Link>
@@ -74,13 +72,10 @@ export default function Navbar() {
 
       {/* ── MOBILE BOTTOM NAV ── */}
       <div className="mobile-bottom-nav">
-        {/* Home */}
         <Link href="/home" className="mobile-bottom-item">
           <span style={{ fontSize: 22 }}>🏠</span>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
         </Link>
-
-        {/* Search bar */}
         <form onSubmit={handleSearch} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
@@ -95,8 +90,6 @@ export default function Navbar() {
             }}
           />
         </form>
-
-        {/* Ad banner CTA */}
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {showPhone && (
             <div style={{
@@ -124,6 +117,16 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-    <a href="https://drive.google.com/uc?export=download&id=1G5ij7HC_05tnBYqMooqYxBlSXO2BsE9R" className="floating-download" target="_blank" rel="noopener noreferrer">📱 Download App</a>
+
+      {/* ── FLOATING DOWNLOAD BUTTON ── */}
+      
+        href="https://drive.google.com/uc?export=download&id=1G5ij7HC_05tnBYqMooqYxBlSXO2BsE9R"
+        className="floating-download"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        📱 Download App
+      </a>
+    </>
   );
 }
