@@ -32,7 +32,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ── DESKTOP NAVBAR ── */}
       <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} style={{ height: 70 }}>
         <Link href="/" className="logo" style={{ fontSize: 26 }}>HindiMovieStream</Link>
         <div className="nav-links" style={{ gap: 24 }}>
@@ -51,12 +50,10 @@ export default function Navbar() {
         </form>
       </nav>
 
-      {/* ── MOBILE TOP BAR: Logo only ── */}
       <div className="mobile-top-bar">
         <Link href="/" className="logo" style={{ fontSize: 18, letterSpacing: 1 }}>HindiMovieStream</Link>
       </div>
 
-      {/* ── MOBILE FILTER PILLS ── */}
       <div className="mobile-pills">
         <div className="pills-row">
           {pills.slice(0, 4).map(p => (
@@ -70,7 +67,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── MOBILE BOTTOM NAV ── */}
       <div className="mobile-bottom-nav">
         <Link href="/home" className="mobile-bottom-item">
           <span style={{ fontSize: 22 }}>🏠</span>
@@ -118,9 +114,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── FLOATING DOWNLOAD BUTTON ── */}
-      
-        href="https://raw.githubusercontent.com/rafi9376/cineby-clone/main/app-debug.apk"
+      <a href="https://raw.githubusercontent.com/rafi9376/cineby-clone/main/app-debug.apk" className="floating-download" target="_blank" rel="noopener noreferrer">📱 Download App</a>
     </>
   );
 }
