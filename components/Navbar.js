@@ -56,7 +56,7 @@ export default function Navbar() {
       {/* ── WEB SHOMVOB BANNER ── */}
       {showShomvob && (
         
-          href="https://play.google.com/store/apps/details?id=com.shomvob.app&hl=en"
+          href="https://play.google.com/store/apps/details?id=com.shomvob.app&amp;hl=en"
           target="_blank"
           rel="noopener noreferrer"
           className="shomvob-banner"
