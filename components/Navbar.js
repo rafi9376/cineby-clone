@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Navbar() {
@@ -8,6 +8,7 @@ export default function Navbar() {
   const [query, setQuery] = useState('');
   const [showPhone, setShowPhone] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -57,12 +58,12 @@ export default function Navbar() {
       <div className="mobile-pills">
         <div className="pills-row">
           {pills.slice(0, 4).map(p => (
-            <Link key={p.href} href={p.href} className="pill">{p.label}</Link>
+            <Link key={p.href} href={p.href} className={`pill ${pathname === p.href ? 'pill-active' : ''}`}>{p.label}</Link>
           ))}
         </div>
         <div className="pills-row">
           {pills.slice(4).map(p => (
-            <Link key={p.href} href={p.href} className="pill">{p.label}</Link>
+            <Link key={p.href} href={p.href} className={`pill ${pathname === p.href ? 'pill-active' : ''}`}>{p.label}</Link>
           ))}
         </div>
       </div>
