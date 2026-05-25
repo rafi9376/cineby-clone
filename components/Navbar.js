@@ -96,7 +96,7 @@ export default function Navbar() {
           <span style={{ fontSize: 22 }}>🏠</span>
           <span style={{ fontSize: 10, fontWeight: 600 }}>Home</span>
         </Link>
-        <form onSubmit={handleSearch} style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+        <form onSubmit={handleSearch} style={{ flex: '0 0 70px', display: 'flex', alignItems: 'center' }}>
           <input
             type="text"
             placeholder="Search..."
@@ -105,14 +105,14 @@ export default function Navbar() {
             style={{
               width: '100%', background: '#1a1a26',
               border: '1px solid #e50914', borderRadius: 8,
-              padding: '6px 8px', color: 'white',
-              fontSize: 12, fontFamily: 'inherit', outline: 'none',
+              padding: '6px 6px', color: 'white',
+              fontSize: 11, fontFamily: 'inherit', outline: 'none',
             }}
           />
         </form>
-        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ flex: '0 0 100px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 6px', height: 44 }}>
-         <span style={{ fontSize: 12, fontWeight: 800, color: '#f5c518', lineHeight: 1.2, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
-         <span style={{ fontSize: 10, fontWeight: 700, color: '#e50914', lineHeight: 1.2, textAlign: 'center' }}>Download Shomvob</span>
+        <a href="https://play.google.com/store/apps/details?id=com.shomvob.app" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ flex: '0 0 110px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', background: '#1a1a26', border: '1px solid #f5c518', borderRadius: 8, padding: '4px 6px', height: 44 }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#f5c518', lineHeight: 1.3, textAlign: 'center' }}>চাকরি খুঁজছেন?</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#e50914', lineHeight: 1.3, textAlign: 'center' }}>Download Shomvob</span>
         </a>
         <button onClick={() => setShowPhone(!showPhone)} style={{ flex: '0 0 58px', background: 'none', border: '1px solid #e50914', borderRadius: 6, color: '#e50914', fontSize: 9, fontWeight: 700, cursor: 'pointer', padding: '4px 5px', textAlign: 'center', lineHeight: 1.3, fontFamily: 'inherit', height: 44, position: 'relative' }}>
           Click to place ad
