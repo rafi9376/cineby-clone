@@ -4,7 +4,7 @@ const API_KEY = 'e0e92d3b-51ea-4d1f-8c2d-1b5047d129ed';
 
 async function getMatches() {
   try {
-    const res = await fetch(`https://api.cricketdata.org/cricket/?apikey=${API_KEY}&offset=0`, { next: { revalidate: 60 } });
+    const res = await fetch(`https://api.cricapi.com/v1/matches?apikey=${API_KEY}&offset=0`, { next: { revalidate: 60 } });
     const data = await res.json();
     return data.data || [];
   } catch {
