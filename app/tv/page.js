@@ -11,18 +11,29 @@ export default async function TVPage() {
   ]);
 
   const tag = t => ({ ...t, media_type: 'tv' });
+  const seenIds = new Set();
+  const dedupe = (items) => items.filter(item => {
+    if (seenIds.has(item.id)) return false;
+    seenIds.add(item.id);
+    return true;
+  });
+
+  const popularItems = dedupe(popular.results.map(tag));
+  const topRatedItems = dedupe(topRated.results.map(tag));
+  const dramaItems = dedupe(drama.results.map(tag));
+  const scifiItems = dedupe(scifi.results.map(tag));
 
   return (
     <>
       <Navbar />
       <div style={{ paddingTop: 80 }}>
-        <Carousel title="Popular TV Shows" items={popular.results.map(tag)} />
-        <Carousel title="Top Rated Shows" items={topRated.results.map(tag)} />
-        <Carousel title="Drama" items={drama.results.map(tag)} />
-        <Carousel title="Sci-Fi & Fantasy" items={scifi.results.map(tag)} />
+        <Carousel title="Popular TV Shows" items={popularItems} />
+        <Carousel title="Top Rated Shows" items={topRatedItems} />
+        <Carousel title="Drama" items={dramaItems} />
+        <Carousel title="Sci-Fi & Fantasy" items={scifiItems} />
       </div>
       <footer>
-        <p>Made with ❤️ using <span>TMDB API</span> • For personal use only</p>
+        <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
     </>
   );
