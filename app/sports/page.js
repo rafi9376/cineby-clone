@@ -149,12 +149,10 @@ function MatchCard({ match, type }) {
         </div>
 
         {match.status && (
-          <div style={{ fontSize: 12, color: type === 'live' ? '#e50914' : '#666' }}>{match.status}</div>
-        )}
-        {type === 'upcoming' && match.dateTimeGMT && (
-          <div style={{ fontSize: 12, color: '#f5c518', marginTop: 2 }}>🕐 {toBDT(match.dateTimeGMT)}</div>
-        )}
-      </div>
+  <div style={{ fontSize: 12, color: type === 'live' ? '#e50914' : '#666' }}>
+    {match.status.replace(/GMT/g, 'BDT')}
+  </div>
+)}
 
       {/* SCORES */}
       <div style={{ textAlign: 'right', flexShrink: 0, minWidth: 130 }}>
