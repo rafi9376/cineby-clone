@@ -12,16 +12,22 @@ export default async function BanglaPage() {
   ]);
 
   const tag = m => ({ ...m, media_type: 'movie' });
+  const seenIds = new Set();
+  const dedupe = (items) => items.filter(item => {
+    if (seenIds.has(item.id)) return false;
+    seenIds.add(item.id);
+    return true;
+  });
 
   return (
     <>
       <Navbar />
       <div style={{ paddingTop: 80 }}>
-        <Carousel title="🆕 Latest Bangla Movies" items={latest.results.map(tag)} seeAllHref="/bangla/latest" />
-        <Carousel title="🔥 Popular Bangla Movies" items={popular.results.map(tag)} seeAllHref="/bangla/popular" />
-        <Carousel title="⭐ Top Rated Bangla Movies" items={topRated.results.map(tag)} seeAllHref="/bangla/toprated" />
-        <Carousel title="💥 Bangla Action Movies" items={action.results.map(tag)} seeAllHref="/bangla/action" />
-        <Carousel title="❤️ Bangla Romance Movies" items={romance.results.map(tag)} seeAllHref="/bangla/romance" />
+        <Carousel title="🆕 Latest Bangla Movies" items={dedupe(latest.results.map(tag))} seeAllHref="/bangla/latest" />
+        <Carousel title="🔥 Popular Bangla Movies" items={dedupe(popular.results.map(tag))} seeAllHref="/bangla/popular" />
+        <Carousel title="⭐ Top Rated Bangla Movies" items={dedupe(topRated.results.map(tag))} seeAllHref="/bangla/toprated" />
+        <Carousel title="💥 Bangla Action Movies" items={dedupe(action.results.map(tag))} seeAllHref="/bangla/action" />
+        <Carousel title="❤️ Bangla Romance Movies" items={dedupe(romance.results.map(tag))} seeAllHref="/bangla/romance" />
       </div>
       <footer>
         <p>© 2026 | Powered by hindimoviestream.xyz</p>
