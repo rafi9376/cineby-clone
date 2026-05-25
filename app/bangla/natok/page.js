@@ -12,16 +12,22 @@ export default async function BanglaNatokPage() {
   ]);
 
   const tag = t => ({ ...t, media_type: 'tv' });
+  const seenIds = new Set();
+  const dedupe = (items) => items.filter(item => {
+    if (seenIds.has(item.id)) return false;
+    seenIds.add(item.id);
+    return true;
+  });
 
   return (
     <>
       <Navbar />
       <div style={{ paddingTop: 80 }}>
-        <Carousel title="🆕 Latest Bangla Natok" items={latest.results.map(tag)} seeAllHref="/bangla/natok/latest" />
-        <Carousel title="🔥 Popular Bangla Natok" items={popular.results.map(tag)} seeAllHref="/bangla/natok/popular" />
-        <Carousel title="⭐ Top Rated Bangla Natok" items={topRated.results.map(tag)} seeAllHref="/bangla/natok/toprated" />
-        <Carousel title="🎭 Drama Natok" items={drama.results.map(tag)} seeAllHref="/bangla/natok/drama" />
-        <Carousel title="😂 Comedy Natok" items={comedy.results.map(tag)} seeAllHref="/bangla/natok/comedy" />
+        <Carousel title="🆕 Latest Bangla Natok" items={dedupe(latest.results.map(tag))} seeAllHref="/bangla/natok/latest" />
+        <Carousel title="🔥 Popular Bangla Natok" items={dedupe(popular.results.map(tag))} seeAllHref="/bangla/natok/popular" />
+        <Carousel title="⭐ Top Rated Bangla Natok" items={dedupe(topRated.results.map(tag))} seeAllHref="/bangla/natok/toprated" />
+        <Carousel title="🎭 Drama Natok" items={dedupe(drama.results.map(tag))} seeAllHref="/bangla/natok/drama" />
+        <Carousel title="😂 Comedy Natok" items={dedupe(comedy.results.map(tag))} seeAllHref="/bangla/natok/comedy" />
       </div>
       <footer>
         <p>© 2026 | Powered by hindimoviestream.xyz</p>
