@@ -1,16 +1,17 @@
 import Navbar from '@/components/Navbar';
 import Carousel from '@/components/Carousel';
 import { fetchTMDB } from '@/lib/tmdb';
+
 export default async function SportsPage() {
   const [cricket, football, basketball, tennis, formula1, wrestling, boxing, olympics] = await Promise.all([
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '6073', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '1395', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '3503', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '2245', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '3113', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '11451', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '1299', sort_by: 'popularity.desc' }),
-    fetchTMDB('/discover/tv', { with_genres: '10767', with_keywords: '1977', sort_by: 'popularity.desc' }),
+    fetchTMDB('/search/tv', { query: 'cricket' }),
+    fetchTMDB('/search/tv', { query: 'football soccer' }),
+    fetchTMDB('/search/tv', { query: 'basketball NBA' }),
+    fetchTMDB('/search/tv', { query: 'tennis' }),
+    fetchTMDB('/search/tv', { query: 'formula 1 F1' }),
+    fetchTMDB('/search/tv', { query: 'wrestling WWE' }),
+    fetchTMDB('/search/tv', { query: 'boxing' }),
+    fetchTMDB('/search/tv', { query: 'olympics' }),
   ]);
 
   const tag = t => ({ ...t, media_type: 'tv' });
