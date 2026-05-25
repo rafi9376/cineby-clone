@@ -21,11 +21,10 @@ function toBDT(dateStr) {
 
 function cleanName(name) {
   if (!name) return '';
-  const parts = name.split(',');
-  const t1 = parts[0] ? parts[0].trim() : '';
-  const t2 = parts[1] ? parts[1].trim() : '';
-  if (t1 && t2) return t1 + ' vs ' + t2;
-  return t1 || name;
+  const comma = name.split(',')[0].trim();
+  const vsParts = comma.split(' vs ');
+  if (vsParts.length >= 2) return vsParts[0].trim() + ' vs ' + vsParts[1].trim();
+  return comma;
 }
 
 function MatchCard(props) {
