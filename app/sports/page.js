@@ -23,10 +23,10 @@ function toBDT(dateStr) {
 function cleanName(name) {
   if (!name) return '';
   const parts = name.split(',');
-  if (parts.length >= 2) {
-    return parts[0].trim() + ' vs ' + parts[1].trim().split(',')[0].trim();
-  }
-  return name;
+  const team1 = parts[0]?.trim() || '';
+  const team2 = parts[1]?.trim() || '';
+  if (team1 && team2) return `${team1} vs ${team2}`;
+  return parts[0]?.trim() || name;
 }
 
 export default async function SportsPage() {
