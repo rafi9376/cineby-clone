@@ -421,9 +421,11 @@ footer span { color: var(--accent); }
   bottom: 0; left: 0; right: 0; z-index: 100;
   background: #0a0a14;
   border-top: 2px solid #e50914;
-  padding: 8px 10px;
-  align-items: center; gap: 8px;
+  padding: 8px 8px;
+  align-items: center;
+  gap: 8px;
   height: 60px;
+  justify-content: space-between;
 }
 .mobile-bottom-item {
   display: flex; flex-direction: column;
