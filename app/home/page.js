@@ -33,11 +33,13 @@ export default async function HomePage() {
     });
   };
 
-  const trendingItems = dedupe(trending.results);
-  const nowPlayingItems = dedupe(nowPlaying.results);
-  const popularMoviesItems = dedupe(popularMovies.results);
-  const topRatedItems = dedupe(topRated.results.map(m => ({ ...m, media_type: 'movie' })));
-  const popularTVItems = dedupe(popularTV.results.map(t => ({ ...t, media_type: 'tv' })));
+  const adKeywords = ['free spins', 'slots', 'casino', 'watch free', 'click here', 'download app', 'bet now', 'poker', 'lottery', 'win now', 'earn money', 'make money'];
+const isAd = (item) => adKeywords.some(k => (item.title || item.name || '').toLowerCase().includes(k));
+const trendingItems = dedupe(trending.results).filter(item => !isAd(item));
+const nowPlayingItems = dedupe(nowPlaying.results).filter(item => !isAd(item));
+const popularMoviesItems = dedupe(popularMovies.results).filter(item => !isAd(item));
+const topRatedItems = dedupe(topRated.results.map(m => ({ ...m, media_type: 'movie' }))).filter(item => !isAd(item));
+const popularTVItems = dedupe(popularTV.results.map(t => ({ ...t, media_type: 'tv' }))).filter(item => !isAd(item));
 
   return (
     <>
