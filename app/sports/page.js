@@ -114,7 +114,7 @@ function FootballCard(props) {
   return (
     <div style={{ background: '#0e0e1a', border: '1px solid ' + borderColor, borderRadius: 12, padding: '14px 20px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', boxShadow: live ? '0 0 20px rgba(229,9,20,0.12)' : 'none' }}>
       {match.poster && (
-        <img src={match.poster} alt={match.tag} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} onError={function(e) { e.target.style.display = 'none'; }} />
+        <img src={match.poster} alt={match.tag} style={{ width: 60, height: 40, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5, flexWrap: 'wrap' }}>
