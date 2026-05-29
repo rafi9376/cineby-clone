@@ -293,7 +293,7 @@ export default function SportsPage() {
             {within24h.length > 0 && (
               <div style={{ marginBottom: 28 }}>
                 <SectionHdr color="#e50914" label="🔴 Starting within 24 hours" count={within24h.length} />
-                <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(165px, 1fr))', gap: 12 }}>
                   {within24h.map(m => <CricketCard key={m.id} match={m} />)}
                 </div>
               </div>
@@ -331,7 +331,7 @@ export default function SportsPage() {
             {upcomingCricket.length > 0 && (
               <div>
                 <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingCricket.length} />
-                <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(165px, 1fr))', gap: 12 }}>
                   {upcomingCricket.slice(0, 20).map(m => <CricketCard key={m.id} match={m} />)}
                 </div>
               </div>
@@ -363,7 +363,7 @@ export default function SportsPage() {
             {upcomingFootball.length > 0 && (
               <div>
                 <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingFootball.length} />
-                <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(165px, 1fr))', gap: 12 }}>
                   {upcomingFootball.slice(0, 16).map(m => <FootballCard key={m.slug} match={m} />)}
                 </div>
               </div>
