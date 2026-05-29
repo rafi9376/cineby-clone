@@ -261,9 +261,13 @@ export default function SportsPage() {
     return cd && cd.diff < 86400000;
   });
 
+  const now = new Date();
   const upcomingCricket = dedupedMatches.filter(m => {
     if (m.matchStarted) return false;
-    if (!m.dateTimeGMT) return true;
+    if (!m.dateTimeGMT) return false;
+    const matchDate = new Date(m.dateTimeGMT);
+    if (matchDate < now) return false;
+    if (matchDate.getFullYear() < 2026) return false;
     const cd = getCountdown(m.dateTimeGMT);
     return cd && cd.diff >= 86400000;
   });
