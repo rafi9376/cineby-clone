@@ -240,10 +240,11 @@ export default function SportsPage() {
     });
   }, []);
 
+  const junkKeywords = ['andhra', 'kakinada', 'vijayawada', 'simhadri', 'bhimavaram', 'tungabhadra', 'capital am', 'royals of r', 'aca-odisha', 'aca inter', 'civil service', 'bayuemas', 'icc women qualifier'];
   const seenNames = new Set();
-const dedupedMatches = cricketMatches.filter(m => {
-  if (!m.teamInfo || m.teamInfo.length === 0) return false;
-  if (!m.teamInfo[0]?.img && !m.teamInfo[1]?.img) return false;
+  const dedupedMatches = cricketMatches.filter(m => {
+    const nameLower = (m.name || '').toLowerCase();
+    if (junkKeywords.some(k => nameLower.includes(k))) return false;
     if (!m.name) return true;
     const comma = m.name.split(',')[0].trim();
     const vs = comma.split(' vs ');
