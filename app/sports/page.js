@@ -241,7 +241,9 @@ export default function SportsPage() {
   }, []);
 
   const seenNames = new Set();
-  const dedupedMatches = cricketMatches.filter(m => {
+const dedupedMatches = cricketMatches.filter(m => {
+  if (!m.teamInfo || m.teamInfo.length === 0) return false;
+  if (!m.teamInfo[0]?.img && !m.teamInfo[1]?.img) return false;
     if (!m.name) return true;
     const comma = m.name.split(',')[0].trim();
     const vs = comma.split(' vs ');
