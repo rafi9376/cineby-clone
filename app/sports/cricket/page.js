@@ -205,7 +205,7 @@ export default function CricketPage() {
                 ))}
               </div>
             </div>
-            <div style={{ position: 'relative', paddingTop: '42%', background: '#000' }}>
+            <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000', width: '100%' }}>
               <iframe
                 key={activeChannel}
                 src={'https://streamcrichd.com/update/fetch.php?hd=' + CHANNELS[activeChannel].hd + '&embed=1'}
