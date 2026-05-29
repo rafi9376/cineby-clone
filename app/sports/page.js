@@ -272,7 +272,14 @@ export default function SportsPage() {
     return cd && cd.diff >= 86400000;
   });
 
-  const upcomingFootball = footballMatches.filter(isUpcomingFootball);
+  const now2 = new Date();
+  const upcomingFootball = footballMatches.filter(m => {
+    if (!isUpcomingFootball(m)) return false;
+    try {
+      const matchDate = new Date(m.kickoff.replace(' ', 'T') + '+07:00');
+      return matchDate >= now2 && matchDate.getFullYear() >= 2026;
+    } catch { return false; }
+  });
   const channels = sport === 'cricket' ? CRICKET_CHANNELS : FOOTBALL_CHANNELS;
 
   return (
