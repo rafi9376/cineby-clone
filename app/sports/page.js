@@ -42,23 +42,6 @@ function getCountdown(dateStr) {
   return { h: Math.floor(diff / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000), diff };
 }
 
-function cleanName(name) {
-  if (!name) return '';
-  const comma = name.split(',')[0].trim();
-  const vs = comma.split(' vs ');
-  if (vs.length >= 2) return vs[0].trim() + ' vs ' + vs[1].trim();
-  return comma;
-}
-
-function isLiveFootball(m) {
-  try {
-    const now = new Date();
-    const start = new Date(m.kickoff.replace(' ', 'T') + '+07:00');
-    const end = new Date(m.endTime.replace(' ', 'T') + '+07:00');
-    return now >= start && now <= end;
-  } catch { return false; }
-}
-
 function isUpcomingFootball(m) {
   try { return new Date() < new Date(m.kickoff.replace(' ', 'T') + '+07:00'); }
   catch { return false; }
@@ -120,7 +103,6 @@ function CricketCard({ match }) {
   const t1Name = t1?.name || match.teams?.[0] || 'TBA';
   const t2Name = t2?.name || match.teams?.[1] || 'TBA';
   const isWithin24h = match.dateTimeGMT && getCountdown(match.dateTimeGMT)?.diff < 86400000;
-
   return (
     <div style={{ background: '#0e0e1a', border: '1px solid ' + (isWithin24h ? 'rgba(229,9,20,0.4)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', flexShrink: 0, width: 160, transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
@@ -223,15 +205,6 @@ function SectionHdr({ color, label, count }) {
   );
 }
 
-function ScrollRow({ children }) {
-  return (
-    <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 6, marginBottom: 28 }}>
-      <style>{`.scrollrow::-webkit-scrollbar{height:3px}.scrollrow::-webkit-scrollbar-thumb{background:#1a1a2e;border-radius:2px}`}</style>
-      {children}
-    </div>
-  );
-}
-
 export default function SportsPage() {
   const [sport, setSport] = useState('cricket');
   const [cricketMatches, setCricketMatches] = useState([]);
@@ -254,25 +227,30 @@ export default function SportsPage() {
     });
   }, []);
 
+  const seenNames = new Set();
+  const dedupedMatches = cricketMatches.filter(m => {
+    if (!m.name) return true;
+    const comma = m.name.split(',')[0].trim();
+    const vs = comma.split(' vs ');
+    const key = vs.length >= 2 ? vs[0].trim() + ' vs ' + vs[1].trim() : comma;
+    if (seenNames.has(key)) return false;
+    seenNames.add(key);
+    return true;
+  });
+
   const within24h = dedupedMatches.filter(m => {
-  if (m.matchStarted) return false;
-  if (!m.dateTimeGMT) return false;
-  const cd = getCountdown(m.dateTimeGMT);
-  return cd && cd.diff < 86400000;
-});
-const seenNames = new Set();
-const dedupedMatches = cricketMatches.filter(m => {
-  const key = cleanName(m.name);
-  if (seenNames.has(key)) return false;
-  seenNames.add(key);
-  return true;
-});
+    if (m.matchStarted) return false;
+    if (!m.dateTimeGMT) return false;
+    const cd = getCountdown(m.dateTimeGMT);
+    return cd && cd.diff < 86400000;
+  });
+
   const upcomingCricket = dedupedMatches.filter(m => {
-  if (m.matchStarted) return false;
-  if (!m.dateTimeGMT) return true;
-  const cd = getCountdown(m.dateTimeGMT);
-  return cd && cd.diff >= 86400000;
-});
+    if (m.matchStarted) return false;
+    if (!m.dateTimeGMT) return true;
+    const cd = getCountdown(m.dateTimeGMT);
+    return cd && cd.diff >= 86400000;
+  });
 
   const upcomingFootball = footballMatches.filter(isUpcomingFootball);
   const channels = sport === 'cricket' ? CRICKET_CHANNELS : FOOTBALL_CHANNELS;
@@ -291,7 +269,6 @@ const dedupedMatches = cricketMatches.filter(m => {
       )}
       <div style={{ background: '#070710', minHeight: '100vh', padding: '90px 48px 48px', fontFamily: 'Outfit, sans-serif' }}>
 
-        {/* HEADER TABS */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid #1a1a2e' }}>
           <Link href="/" style={{ color: '#444', fontSize: 12, textDecoration: 'none', flexShrink: 0 }}>← Home</Link>
           <div style={{ width: 1, height: 18, background: '#1a1a2e', flexShrink: 0 }}></div>
@@ -304,10 +281,8 @@ const dedupedMatches = cricketMatches.filter(m => {
 
         {loading && <div style={{ textAlign: 'center', padding: 80, color: '#333' }}>Loading...</div>}
 
-        {/* CRICKET TAB */}
         {!loading && sport === 'cricket' && (
           <div>
-            {/* WITHIN 24H */}
             {within24h.length > 0 && (
               <div style={{ marginBottom: 28 }}>
                 <SectionHdr color="#e50914" label="🔴 Starting within 24 hours" count={within24h.length} />
@@ -317,7 +292,6 @@ const dedupedMatches = cricketMatches.filter(m => {
               </div>
             )}
 
-            {/* NO UPCOMING SOON */}
             {within24h.length === 0 && (
               <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ fontSize: 32 }}>🏏</div>
@@ -328,14 +302,14 @@ const dedupedMatches = cricketMatches.filter(m => {
               </div>
             )}
 
-            {/* WATCH SOURCES */}
             <div style={{ marginBottom: 28 }}>
               <SectionHdr color="#fff" label="📺 Watch Live Cricket" count={0} />
               <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
                 <div style={{ fontSize: 9, color: '#333', fontWeight: 700, letterSpacing: 2, marginBottom: 12 }}>SELECT A CHANNEL — STREAM OPENS ON THIS PAGE</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {CRICKET_CHANNELS.map((ch, i) => (
-                    <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }} style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
+                    <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }}
+                      style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#e50914'; e.currentTarget.style.background = 'rgba(229,9,20,0.08)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}
                     >
@@ -347,7 +321,6 @@ const dedupedMatches = cricketMatches.filter(m => {
               </div>
             </div>
 
-            {/* UPCOMING */}
             {upcomingCricket.length > 0 && (
               <div>
                 <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingCricket.length} />
@@ -359,17 +332,16 @@ const dedupedMatches = cricketMatches.filter(m => {
           </div>
         )}
 
-        {/* FOOTBALL TAB */}
         {!loading && sport === 'football' && (
           <div>
-            {/* WATCH SOURCES */}
             <div style={{ marginBottom: 28 }}>
               <SectionHdr color="#fff" label="📺 Watch Live Football" count={0} />
               <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
                 <div style={{ fontSize: 9, color: '#333', fontWeight: 700, letterSpacing: 2, marginBottom: 12 }}>SELECT A CHANNEL — STREAM OPENS ON THIS PAGE</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {FOOTBALL_CHANNELS.map((ch, i) => (
-                    <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }} style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
+                    <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }}
+                      style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#e50914'; e.currentTarget.style.background = 'rgba(229,9,20,0.08)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}
                     >
@@ -381,7 +353,6 @@ const dedupedMatches = cricketMatches.filter(m => {
               </div>
             </div>
 
-            {/* UPCOMING FOOTBALL */}
             {upcomingFootball.length > 0 && (
               <div>
                 <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingFootball.length} />
@@ -400,7 +371,6 @@ const dedupedMatches = cricketMatches.filter(m => {
           </div>
         )}
 
-        {/* HIGHLIGHTS TAB */}
         {!loading && sport === 'highlights' && (
           <div>
             <SectionHdr color="#fff" label="🎬 Latest Highlights" count={highlights.length} />
