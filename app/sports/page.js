@@ -271,7 +271,14 @@ export default function SportsPage() {
     });
   }, []);
 
-  const liveCricket = cricketMatches.filter(m => m.matchStarted && !m.matchEnded);
+  const liveCricket = cricketMatches.filter(m => {
+  if (!m.matchStarted || m.matchEnded) return false;
+  if (!m.dateTimeGMT) return true;
+  const start = new Date(m.dateTimeGMT);
+  const now = new Date();
+  const hoursSinceStart = (now - start) / 3600000;
+  return hoursSinceStart < 12;
+});
   const upcomingCricket = cricketMatches.filter(m => !m.matchStarted);
   const liveFootball = footballMatches.filter(isLiveFootball);
   const upcomingFootball = footballMatches.filter(isUpcomingFootball);
