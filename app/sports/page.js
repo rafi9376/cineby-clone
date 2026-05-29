@@ -103,7 +103,7 @@ function CricketCard({ match }) {
   const t2Name = t2?.name || match.teams?.[1] || 'TBA';
   const isWithin24h = match.dateTimeGMT && getCountdown(match.dateTimeGMT)?.diff < 86400000;
   return (
-    <div style={{ background: '#0e0e1a', border: '1px solid ' + (isWithin24h ? 'rgba(229,9,20,0.4)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', flexShrink: 0, width: 165, transition: 'transform 0.2s' }}
+    <div style={{ background: '#0e0e1a', border: '1px solid ' + (isWithin24h ? 'rgba(229,9,20,0.4)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
@@ -119,7 +119,7 @@ function CricketCard({ match }) {
         <div style={{ fontSize: 8, color: '#2a2a3e', marginBottom: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.matchType?.toUpperCase()} · {match.venue?.split(',')[0]}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 5 }}>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{t1Name}</div>
-          <div style={{ fontSize: 8, color: '#2a2a3e', flexShrink: 0 }}>vs</div>
+          <div style={{ fontSize: 8, color: '#2a2a3e'}}>vs</div>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', textAlign: 'right' }}>{t2Name}</div>
         </div>
         {match.dateTimeGMT && isWithin24h && <Countdown dateStr={match.dateTimeGMT} />}
@@ -132,7 +132,7 @@ function CricketCard({ match }) {
 function FootballCard({ match }) {
   const teams = match.tag ? match.tag.split(' vs ') : ['Team 1', 'Team 2'];
   return (
-    <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', flexShrink: 0, width: 160, transition: 'transform 0.2s' }}
+    <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', width: 160, transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
@@ -148,7 +148,7 @@ function FootballCard({ match }) {
         <div style={{ fontSize: 8, color: '#2a2a3e', marginBottom: 2 }}>{match.league || 'Football'}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 5 }}>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{teams[0]}</div>
-          <div style={{ fontSize: 8, color: '#2a2a3e', flexShrink: 0 }}>vs</div>
+          <div style={{ fontSize: 8, color: '#2a2a3e'}}>vs</div>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', textAlign: 'right' }}>{teams[1] || ''}</div>
         </div>
         <div style={{ fontSize: 9, color: '#f5c518' }}>🕐 {footballToBDT(match.kickoff)}</div>
@@ -277,8 +277,8 @@ export default function SportsPage() {
       <div style={{ background: '#070710', minHeight: '100vh', padding: '90px 48px 48px', fontFamily: 'Outfit, sans-serif' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid #1a1a2e' }}>
-          <Link href="/" style={{ color: '#444', fontSize: 12, textDecoration: 'none', flexShrink: 0 }}>← Home</Link>
-          <div style={{ width: 1, height: 18, background: '#1a1a2e', flexShrink: 0 }}></div>
+          <Link href="/" style={{ color: '#444', fontSize: 12, textDecoration: 'none' }}>← Home</Link>
+          <div style={{ width: 1, height: 18, background: '#1a1a2e'}}></div>
           <div style={{ display: 'flex', gap: 6 }}>
             {[{key:'cricket',label:'🏏 Cricket'},{key:'football',label:'⚽ Football'},{key:'highlights',label:'🎬 Highlights'}].map(t => (
               <button key={t.key} onClick={() => setSport(t.key)} style={{ padding: '7px 18px', borderRadius: 20, border: sport === t.key ? 'none' : '1px solid #1a1a2e', background: sport === t.key ? '#e50914' : 'transparent', color: sport === t.key ? '#fff' : '#444', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>{t.label}</button>
