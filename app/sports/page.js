@@ -27,17 +27,30 @@ const FOOTBALL_CHANNELS = [
   { label: '⭐ LaLiga TV', hd: 57, desc: 'La Liga' },
 ];
 
-const JUNK_KEYWORDS = [
-  'andhra', 'kakinada', 'vijayawada', 'simhadri', 'bhimavaram',
-  'tungabhadra', 'capital am', 'royals of r', 'aca-odisha', 'aca inter',
-  'civil service', 'bayuemas', 'icc women qualifier',
-];
+// ─── STRICT CRICKET FILTER ────────────────────────────────────────────────────
+const STRICT_LEAGUES = ['ipl', 'indian premier league'];
+const INTL_FORMATS = ['test', 'odi', 't20i'];
+const BD_TEAMS = ['bangladesh', 'tigers', 'bcb'];
 
-function isJunk(homeTeam, awayTeam, league) {
-  const text = ((homeTeam || '') + ' ' + (awayTeam || '') + ' ' + (league || '')).toLowerCase();
-  return JUNK_KEYWORDS.some(k => text.includes(k));
+function isAllowedMatch(leagueName, format, homeTeam, awayTeam) {
+  const league = (leagueName || '').toLowerCase();
+  const fmt = (format || '').toLowerCase().trim();
+  const home = (homeTeam || '').toLowerCase();
+  const away = (awayTeam || '').toLowerCase();
+
+  // 1. IPL
+  if (STRICT_LEAGUES.some(k => league.includes(k))) return true;
+
+  // 2. International formats only — Test / ODI / T20I
+  if (INTL_FORMATS.some(f => fmt === f || fmt === f + 'i')) return true;
+
+  // 3. Bangladesh national team in any format
+  if (BD_TEAMS.some(k => home.includes(k) || away.includes(k))) return true;
+
+  return false;
 }
 
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function toBDT(isoStr) {
   if (!isoStr) return '';
   return new Date(isoStr).toLocaleString('en-BD', {
@@ -68,10 +81,14 @@ function footballToBDT(kickoff) {
   if (!kickoff) return '';
   try {
     const bdt = new Date(new Date(kickoff.replace(' ', 'T') + '+07:00').getTime() - 3600000);
-    return bdt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) + ' BDT';
+    return bdt.toLocaleString('en-US', {
+      month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true,
+    }) + ' BDT';
   } catch { return ''; }
 }
 
+// ─── FETCH CRICKET (Highlightly — strict filter) ──────────────────────────────
 async function fetchHighlightlyCricket() {
   const today = new Date();
   const dates = Array.from({ length: 10 }, (_, i) => {
@@ -97,11 +114,23 @@ async function fetchHighlightlyCricket() {
     for (const m of arr) {
       if (!m.id || seen.has(m.id)) continue;
       seen.add(m.id);
-      const state = m.state?.description?.toLowerCase() || '';
+
+      const state = (m.state?.description || '').toLowerCase();
       if (state === 'finished') continue;
-      if (isJunk(m.homeTeam?.name, m.awayTeam?.name, m.league?.name)) continue;
+
+      // STRICT FILTER — IPL / international formats / Bangladesh only
+      if (!isAllowedMatch(
+        m.league?.name,
+        m.format,
+        m.homeTeam?.name,
+        m.awayTeam?.name
+      )) continue;
+
       const startMs = new Date(m.startTime).getTime();
       if (!m.startTime || startMs < Date.now() - 3 * 3600000) continue;
+
+      const isLive = state !== '' && state !== 'not started' && state !== 'scheduled';
+
       matches.push({
         id: m.id,
         homeTeam: m.homeTeam,
@@ -109,7 +138,7 @@ async function fetchHighlightlyCricket() {
         league: m.league?.name || '',
         format: m.format || '',
         startTime: m.startTime,
-        isLive: state !== 'not started' && state !== '',
+        isLive,
       });
     }
   }
@@ -118,6 +147,7 @@ async function fetchHighlightlyCricket() {
   return matches;
 }
 
+// ─── COUNTDOWN COMPONENT ──────────────────────────────────────────────────────
 function Countdown({ isoStr }) {
   const [time, setTime] = useState(getCountdown(isoStr));
   useEffect(() => {
@@ -127,11 +157,12 @@ function Countdown({ isoStr }) {
   if (!time) return null;
   return (
     <span style={{ color: '#f5c518', fontSize: 11, fontWeight: 700, fontFamily: 'monospace' }}>
-      ⏱ {String(time.h).padStart(2,'0')}:{String(time.m).padStart(2,'0')}:{String(time.s).padStart(2,'0')}
+      ⏱ {String(time.h).padStart(2, '0')}:{String(time.m).padStart(2, '0')}:{String(time.s).padStart(2, '0')}
     </span>
   );
 }
 
+// ─── PLAYER MODAL ─────────────────────────────────────────────────────────────
 function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
   useEffect(() => {
     const handler = e => e.key === 'Escape' && onClose();
@@ -143,7 +174,9 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div style={{ width: '100%', maxWidth: 920, background: '#0e0e1a', borderRadius: 16, overflow: 'hidden', border: '1px solid #e50914' }}>
         <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1a1a2e' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Live {sport === 'cricket' ? '🏏 Cricket' : '⚽ Football'} Stream</div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
+            Live {sport === 'cricket' ? '🏏 Cricket' : '⚽ Football'} Stream
+          </div>
           <button onClick={onClose} style={{ background: '#1a1a2e', border: 'none', color: '#aaa', fontSize: 16, cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit' }}>✕</button>
         </div>
         <div style={{ padding: '10px 16px', display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid #1a1a2e', background: '#070710' }}>
@@ -155,7 +188,14 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
           ))}
         </div>
         <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-          <iframe key={channel} src={'https://streamcrichd.com/update/fetch.php?hd=' + channels[channel].hd + '&embed=1'} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }} scrolling="no" allowFullScreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture" />
+          <iframe
+            key={channel}
+            src={'https://streamcrichd.com/update/fetch.php?hd=' + channels[channel].hd + '&embed=1'}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+            scrolling="no"
+            allowFullScreen
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+          />
         </div>
         <div style={{ padding: '8px 16px', background: '#070710', borderTop: '1px solid #1a1a2e' }}>
           <div style={{ fontSize: 10, color: '#333' }}>If stream is not working, switch to another channel above · Press Esc to close</div>
@@ -165,12 +205,14 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
   );
 }
 
+// ─── CRICKET CARD ─────────────────────────────────────────────────────────────
 function CricketCard({ match }) {
   const cd = getCountdown(match.startTime);
   const isWithin24h = cd && cd.diff < 86400000;
 
   return (
-    <div style={{ background: '#0e0e1a', border: '1px solid ' + (match.isLive ? '#e50914' : isWithin24h ? 'rgba(229,9,20,0.35)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
+    <div
+      style={{ background: '#0e0e1a', border: '1px solid ' + (match.isLive ? '#e50914' : isWithin24h ? 'rgba(229,9,20,0.35)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
@@ -188,7 +230,7 @@ function CricketCard({ match }) {
         </div>
       </div>
       <div style={{ padding: '9px 11px' }}>
-        <div style={{ fontSize: 8, color: '#2a2a3e', marginBottom: 2 }}>{match.format} · {match.league}</div>
+        <div style={{ fontSize: 8, color: '#444', marginBottom: 2 }}>{match.format} · {match.league}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 5 }}>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{match.homeTeam?.name || 'TBA'}</div>
           <div style={{ fontSize: 8, color: '#2a2a3e', flexShrink: 0 }}>vs</div>
@@ -201,10 +243,12 @@ function CricketCard({ match }) {
   );
 }
 
+// ─── FOOTBALL CARD ────────────────────────────────────────────────────────────
 function FootballCard({ match }) {
   const teams = match.tag ? match.tag.split(' vs ') : ['Team 1', 'Team 2'];
   return (
-    <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
+    <div
+      style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
@@ -217,7 +261,7 @@ function FootballCard({ match }) {
         </div>
       </div>
       <div style={{ padding: '9px 11px' }}>
-        <div style={{ fontSize: 8, color: '#2a2a3e', marginBottom: 2 }}>{match.league || 'Football'}</div>
+        <div style={{ fontSize: 8, color: '#444', marginBottom: 2 }}>{match.league || 'Football'}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 5 }}>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{teams[0]}</div>
           <div style={{ fontSize: 8, color: '#2a2a3e', flexShrink: 0 }}>vs</div>
@@ -229,6 +273,7 @@ function FootballCard({ match }) {
   );
 }
 
+// ─── HIGHLIGHT CARD ───────────────────────────────────────────────────────────
 function HighlightCard({ h }) {
   const [open, setOpen] = useState(false);
   const thumb = h.thumbnail || h.image || h.thumbnailUrl;
@@ -236,13 +281,16 @@ function HighlightCard({ h }) {
   const title = h.title || h.match || 'Highlight';
   return (
     <>
-      <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }}
+      <div
+        style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }}
         onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
         onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         onClick={() => setOpen(true)}
       >
         <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-          {thumb ? <img src={thumb} alt={title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🏏</div>}
+          {thumb
+            ? <img src={thumb} alt={title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🏏</div>}
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(229,9,20,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>▶</div>
           </div>
@@ -253,8 +301,12 @@ function HighlightCard({ h }) {
           <div style={{ fontSize: 9, color: '#444' }}>{h.league?.name || h.league || ''}</div>
         </div>
       </div>
+
       {open && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} onClick={() => setOpen(false)}>
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+          onClick={() => setOpen(false)}
+        >
           <div style={{ width: '100%', maxWidth: 800 }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div style={{ fontSize: 13, color: '#fff', fontWeight: 600 }}>{title}</div>
@@ -270,16 +322,20 @@ function HighlightCard({ h }) {
   );
 }
 
+// ─── SECTION HEADER ───────────────────────────────────────────────────────────
 function SectionHdr({ color, label, count }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color, letterSpacing: 2, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</div>
-      {count > 0 && <div style={{ background: color === '#e50914' ? 'rgba(229,9,20,0.12)' : color === '#f5c518' ? 'rgba(245,197,24,0.1)' : 'rgba(255,255,255,0.05)', color, fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10 }}>{count}</div>}
+      {count > 0 && (
+        <div style={{ background: color === '#e50914' ? 'rgba(229,9,20,0.12)' : color === '#f5c518' ? 'rgba(245,197,24,0.1)' : 'rgba(255,255,255,0.05)', color, fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10 }}>{count}</div>
+      )}
       <div style={{ flex: 1, height: 1, background: '#1a1a2e' }}></div>
     </div>
   );
 }
 
+// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function SportsPage() {
   const [sport, setSport] = useState('cricket');
   const [cricketMatches, setCricketMatches] = useState([]);
@@ -303,7 +359,8 @@ export default function SportsPage() {
   useEffect(() => {
     if (sport !== 'football' || footballMatches.length > 0) return;
     setFootLoading(true);
-    fetch(EMBEDSPORTEX_URL).then(r => r.json())
+    fetch(EMBEDSPORTEX_URL)
+      .then(r => r.json())
       .then(d => {
         const now = new Date();
         const all = (d.football || []).filter(m => {
@@ -325,7 +382,8 @@ export default function SportsPage() {
     setHighLoading(true);
     fetch(`${HIGHLIGHTLY_BASE}/highlights?limit=16`, {
       headers: { 'x-rapidapi-key': HIGHLIGHT_API_KEY },
-    }).then(r => r.json())
+    })
+      .then(r => r.json())
       .then(d => setHighlights(Array.isArray(d) ? d : (d.data || [])))
       .catch(() => {})
       .finally(() => setHighLoading(false));
@@ -349,7 +407,13 @@ export default function SportsPage() {
     <>
       <Navbar />
       {modalOpen && (
-        <PlayerModal sport={sport} channel={modalChannel} channels={channels} onClose={() => setModalOpen(false)} onChannelChange={setModalChannel} />
+        <PlayerModal
+          sport={sport}
+          channel={modalChannel}
+          channels={channels}
+          onClose={() => setModalOpen(false)}
+          onChannelChange={setModalChannel}
+        />
       )}
       <div style={{ background: '#070710', minHeight: '100vh', padding: '90px 48px 48px', fontFamily: 'Outfit, sans-serif' }}>
 
@@ -358,20 +422,30 @@ export default function SportsPage() {
           <Link href="/" style={{ color: '#444', fontSize: 12, textDecoration: 'none', flexShrink: 0 }}>← Home</Link>
           <div style={{ width: 1, height: 18, background: '#1a1a2e', flexShrink: 0 }}></div>
           <div style={{ display: 'flex', gap: 6 }}>
-            {[{key:'cricket',label:'🏏 Cricket'},{key:'football',label:'⚽ Football'},{key:'highlights',label:'🎬 Highlights'}].map(t => (
-              <button key={t.key} onClick={() => setSport(t.key)} style={{ padding: '7px 18px', borderRadius: 20, border: sport === t.key ? 'none' : '1px solid #1a1a2e', background: sport === t.key ? '#e50914' : 'transparent', color: sport === t.key ? '#fff' : '#444', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>{t.label}</button>
+            {[
+              { key: 'cricket', label: '🏏 Cricket' },
+              { key: 'football', label: '⚽ Football' },
+              { key: 'highlights', label: '🎬 Highlights' },
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setSport(t.key)}
+                style={{ padding: '7px 18px', borderRadius: 20, border: sport === t.key ? 'none' : '1px solid #1a1a2e', background: sport === t.key ? '#e50914' : 'transparent', color: sport === t.key ? '#fff' : '#444', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}
+              >{t.label}</button>
             ))}
           </div>
         </div>
 
-        {/* CRICKET TAB */}
+        {/* ── CRICKET TAB ── */}
         {sport === 'cricket' && (
           <div>
-            {cricketLoading && <div style={{ textAlign: 'center', padding: 80, color: '#333' }}>🏏 Loading matches...</div>}
+            {cricketLoading && (
+              <div style={{ textAlign: 'center', padding: 80, color: '#333' }}>🏏 Loading matches...</div>
+            )}
 
             {!cricketLoading && (
               <>
-                {/* LIVE */}
+                {/* LIVE NOW */}
                 {liveMatches.length > 0 && (
                   <div style={{ marginBottom: 28 }}>
                     <SectionHdr color="#e50914" label="🔴 Live Now" count={liveMatches.length} />
@@ -381,7 +455,7 @@ export default function SportsPage() {
                   </div>
                 )}
 
-                {/* WITHIN 24H */}
+                {/* STARTING WITHIN 24H */}
                 {within24h.length > 0 && (
                   <div style={{ marginBottom: 28 }}>
                     <SectionHdr color="#e50914" label="🔴 Starting within 24 hours" count={within24h.length} />
@@ -391,6 +465,7 @@ export default function SportsPage() {
                   </div>
                 )}
 
+                {/* EMPTY STATE — no live or soon */}
                 {liveMatches.length === 0 && within24h.length === 0 && (
                   <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ fontSize: 32 }}>🏏</div>
@@ -401,14 +476,16 @@ export default function SportsPage() {
                   </div>
                 )}
 
-                {/* WATCH SOURCES */}
+                {/* WATCH LIVE CRICKET */}
                 <div style={{ marginBottom: 28 }}>
                   <SectionHdr color="#fff" label="📺 Watch Live Cricket" count={0} />
                   <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
                     <div style={{ fontSize: 9, color: '#333', fontWeight: 700, letterSpacing: 2, marginBottom: 12 }}>SELECT A CHANNEL — STREAM OPENS ON THIS PAGE</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {CRICKET_CHANNELS.map((ch, i) => (
-                        <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }}
+                        <button
+                          key={i}
+                          onClick={() => { setModalChannel(i); setModalOpen(true); }}
                           style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.borderColor = '#e50914'; e.currentTarget.style.background = 'rgba(229,9,20,0.08)'; }}
                           onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}
@@ -421,7 +498,7 @@ export default function SportsPage() {
                   </div>
                 </div>
 
-                {/* UPCOMING */}
+                {/* UPCOMING MATCHES */}
                 {upcomingCricket.length > 0 && (
                   <div>
                     <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingCricket.length} />
@@ -430,21 +507,32 @@ export default function SportsPage() {
                     </div>
                   </div>
                 )}
+
+                {/* NO MATCHES AT ALL */}
+                {cricketMatches.length === 0 && (
+                  <div style={{ textAlign: 'center', padding: '40px 0', color: '#333' }}>
+                    <div style={{ fontSize: 32, marginBottom: 10 }}>🏏</div>
+                    <div style={{ fontSize: 14 }}>No IPL or international matches in the next 10 days</div>
+                  </div>
+                )}
               </>
             )}
           </div>
         )}
 
-        {/* FOOTBALL TAB */}
+        {/* ── FOOTBALL TAB ── */}
         {sport === 'football' && (
           <div>
+            {/* WATCH LIVE FOOTBALL */}
             <div style={{ marginBottom: 28 }}>
               <SectionHdr color="#fff" label="📺 Watch Live Football" count={0} />
               <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
                 <div style={{ fontSize: 9, color: '#333', fontWeight: 700, letterSpacing: 2, marginBottom: 12 }}>SELECT A CHANNEL — STREAM OPENS ON THIS PAGE</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {FOOTBALL_CHANNELS.map((ch, i) => (
-                    <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }}
+                    <button
+                      key={i}
+                      onClick={() => { setModalChannel(i); setModalOpen(true); }}
                       style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#e50914'; e.currentTarget.style.background = 'rgba(229,9,20,0.08)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}
@@ -457,7 +545,9 @@ export default function SportsPage() {
               </div>
             </div>
 
-            {footLoading && <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>⚽ Loading matches...</div>}
+            {footLoading && (
+              <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>⚽ Loading matches...</div>
+            )}
 
             {!footLoading && footballMatches.length > 0 && (
               <div>
@@ -477,11 +567,13 @@ export default function SportsPage() {
           </div>
         )}
 
-        {/* HIGHLIGHTS TAB */}
+        {/* ── HIGHLIGHTS TAB ── */}
         {sport === 'highlights' && (
           <div>
             <SectionHdr color="#fff" label="🎬 Latest Highlights" count={highlights.length} />
-            {highLoading && <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>🎬 Loading highlights...</div>}
+            {highLoading && (
+              <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>🎬 Loading highlights...</div>
+            )}
             {!highLoading && highlights.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#444' }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>🎬</div>
@@ -498,6 +590,7 @@ export default function SportsPage() {
         )}
 
       </div>
+
       <footer style={{ padding: '20px 48px', borderTop: '1px solid #0e0e1a', textAlign: 'center', color: '#222', fontSize: 13 }}>
         <p>© 2026 | Powered by hindimoviestream.xyz</p>
       </footer>
