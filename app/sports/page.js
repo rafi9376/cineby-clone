@@ -254,19 +254,25 @@ export default function SportsPage() {
     });
   }, []);
 
-  const within24h = cricketMatches.filter(m => {
-    if (m.matchStarted) return false;
-    if (!m.dateTimeGMT) return false;
-    const cd = getCountdown(m.dateTimeGMT);
-    return cd && cd.diff < 86400000;
-  });
-
-  const upcomingCricket = cricketMatches.filter(m => {
-    if (m.matchStarted) return false;
-    if (!m.dateTimeGMT) return true;
-    const cd = getCountdown(m.dateTimeGMT);
-    return cd && cd.diff >= 86400000;
-  });
+  const within24h = dedupedMatches.filter(m => {
+  if (m.matchStarted) return false;
+  if (!m.dateTimeGMT) return false;
+  const cd = getCountdown(m.dateTimeGMT);
+  return cd && cd.diff < 86400000;
+});
+const seenNames = new Set();
+const dedupedMatches = cricketMatches.filter(m => {
+  const key = cleanName(m.name);
+  if (seenNames.has(key)) return false;
+  seenNames.add(key);
+  return true;
+});
+  const upcomingCricket = dedupedMatches.filter(m => {
+  if (m.matchStarted) return false;
+  if (!m.dateTimeGMT) return true;
+  const cd = getCountdown(m.dateTimeGMT);
+  return cd && cd.diff >= 86400000;
+});
 
   const upcomingFootball = footballMatches.filter(isUpcomingFootball);
   const channels = sport === 'cricket' ? CRICKET_CHANNELS : FOOTBALL_CHANNELS;
