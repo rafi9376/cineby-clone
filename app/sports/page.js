@@ -216,7 +216,11 @@ export default function SportsPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('https://api.cricapi.com/v1/matches?apikey=' + CRICKET_API_KEY + '&offset=0').then(r => r.json()).catch(() => ({ data: [] })),
+      Promise.all([
+  fetch('https://api.cricapi.com/v1/matches?apikey=' + CRICKET_API_KEY + '&offset=0').then(r => r.json()).catch(() => ({ data: [] })),
+  fetch('https://api.cricapi.com/v1/matches?apikey=' + CRICKET_API_KEY + '&offset=25').then(r => r.json()).catch(() => ({ data: [] })),
+  fetch('https://api.cricapi.com/v1/matches?apikey=' + CRICKET_API_KEY + '&offset=50').then(r => r.json()).catch(() => ({ data: [] })),
+]).then(([p1, p2, p3]) => ({ data: [...(p1.data||[]), ...(p2.data||[]), ...(p3.data||[])] })),
       fetch('https://api.embedsportex.site/api/streams').then(r => r.json()).catch(() => ({ football: [] })),
       fetch('https://cricket.highlightly.net/highlights?limit=12', { headers: { 'x-rapidapi-key': HIGHLIGHT_API_KEY } }).then(r => r.json()).catch(() => ({ data: [] })),
     ]).then(([cric, foot, high]) => {
