@@ -27,27 +27,72 @@ const FOOTBALL_CHANNELS = [
   { label: '⭐ LaLiga TV', hd: 57, desc: 'La Liga' },
 ];
 
-// ─── STRICT CRICKET FILTER ────────────────────────────────────────────────────
-const STRICT_LEAGUES = ['ipl', 'indian premier league'];
-const INTL_FORMATS = ['test', 'odi', 't20i'];
-const BD_TEAMS = ['bangladesh', 'tigers', 'bcb'];
+// ─── STRICT FILTER CONFIG ─────────────────────────────────────────────────────
 
-function isAllowedMatch(leagueName, format, homeTeam, awayTeam) {
-  const league = (leagueName || '').toLowerCase();
-  const fmt = (format || '').toLowerCase().trim();
-  const home = (homeTeam || '').toLowerCase();
-  const away = (awayTeam || '').toLowerCase();
+// Exact team names as Highlightly returns them (lowercase for comparison)
+const ALLOWED_NATIONS = [
+  'australia',
+  'south africa',
+  'bangladesh',
+  'new zealand',
+  'india',
+  'afghanistan',
+  'west indies',
+  'zimbabwe',
+  'england',
+  'sri lanka',
+  'pakistan',
+];
 
-  // 1. IPL
-  if (STRICT_LEAGUES.some(k => league.includes(k))) return true;
+// Only these exact format strings (Highlightly values, case-insensitive)
+const ALLOWED_FORMATS = ['test', 'odi', 't20i'];
 
-  // 2. International formats only — Test / ODI / T20I
-  if (INTL_FORMATS.some(f => fmt === f || fmt === f + 'i')) return true;
+// IPL league name keywords
+const IPL_KEYWORDS = ['ipl', 'indian premier league'];
 
-  // 3. Bangladesh national team in any format
-  if (BD_TEAMS.some(k => home.includes(k) || away.includes(k))) return true;
+// Words that disqualify a team — women's, youth, A-team, clubs
+const DISQUALIFY_WORDS = [
+  'women', 'woman', 'female',
+  'u19', 'u-19', 'under-19', 'under 19', 'under19',
+  'u17', 'u16',
+  ' a ', ' a$', // "India A", "England A"
+  'emerging',
+  'lions', 'eagles', 'hawks', // common A-team nicknames
+];
 
-  return false;
+function isAllowedNation(teamName) {
+  if (!teamName) return false;
+  const name = teamName.toLowerCase().trim();
+
+  // Must not contain any disqualifying word
+  if (DISQUALIFY_WORDS.some(w => name.includes(w))) return false;
+
+  // Must be exactly one of the 11 nations
+  // Use exact match OR "starts with" to handle slight suffix variations
+  return ALLOWED_NATIONS.some(n => name === n || name.startsWith(n + ' ') || name === n);
+}
+
+function isAllowedFormat(format) {
+  return ALLOWED_FORMATS.includes((format || '').toLowerCase().trim());
+}
+
+function isIPL(leagueName) {
+  const l = (leagueName || '').toLowerCase();
+  return IPL_KEYWORDS.some(k => l.includes(k));
+}
+
+function isAllowedMatch(leagueName, format, homeTeamName, awayTeamName) {
+  // Gate 1: IPL — always allow regardless of team names
+  if (isIPL(leagueName)) return true;
+
+  // Gate 2: Must be a true international format
+  if (!isAllowedFormat(format)) return false;
+
+  // Gate 3: BOTH teams must be from the allowed 11 nations (men's only)
+  if (!isAllowedNation(homeTeamName)) return false;
+  if (!isAllowedNation(awayTeamName)) return false;
+
+  return true;
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -88,7 +133,7 @@ function footballToBDT(kickoff) {
   } catch { return ''; }
 }
 
-// ─── FETCH CRICKET (Highlightly — strict filter) ──────────────────────────────
+// ─── FETCH CRICKET ────────────────────────────────────────────────────────────
 async function fetchHighlightlyCricket() {
   const today = new Date();
   const dates = Array.from({ length: 10 }, (_, i) => {
@@ -118,7 +163,6 @@ async function fetchHighlightlyCricket() {
       const state = (m.state?.description || '').toLowerCase();
       if (state === 'finished') continue;
 
-      // STRICT FILTER — IPL / international formats / Bangladesh only
       if (!isAllowedMatch(
         m.league?.name,
         m.format,
@@ -147,7 +191,7 @@ async function fetchHighlightlyCricket() {
   return matches;
 }
 
-// ─── COUNTDOWN COMPONENT ──────────────────────────────────────────────────────
+// ─── COUNTDOWN ────────────────────────────────────────────────────────────────
 function Countdown({ isoStr }) {
   const [time, setTime] = useState(getCountdown(isoStr));
   useEffect(() => {
@@ -347,7 +391,6 @@ export default function SportsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalChannel, setModalChannel] = useState(0);
 
-  // Load cricket on mount
   useEffect(() => {
     setCricketLoading(true);
     fetchHighlightlyCricket()
@@ -355,7 +398,6 @@ export default function SportsPage() {
       .finally(() => setCricketLoading(false));
   }, []);
 
-  // Load football when tab selected
   useEffect(() => {
     if (sport !== 'football' || footballMatches.length > 0) return;
     setFootLoading(true);
@@ -376,7 +418,6 @@ export default function SportsPage() {
       .finally(() => setFootLoading(false));
   }, [sport]);
 
-  // Load highlights when tab selected
   useEffect(() => {
     if (sport !== 'highlights' || highlights.length > 0) return;
     setHighLoading(true);
@@ -417,7 +458,7 @@ export default function SportsPage() {
       )}
       <div style={{ background: '#070710', minHeight: '100vh', padding: '90px 48px 48px', fontFamily: 'Outfit, sans-serif' }}>
 
-        {/* HEADER TABS */}
+        {/* TABS */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid #1a1a2e' }}>
           <Link href="/" style={{ color: '#444', fontSize: 12, textDecoration: 'none', flexShrink: 0 }}>← Home</Link>
           <div style={{ width: 1, height: 18, background: '#1a1a2e', flexShrink: 0 }}></div>
@@ -445,7 +486,6 @@ export default function SportsPage() {
 
             {!cricketLoading && (
               <>
-                {/* LIVE NOW */}
                 {liveMatches.length > 0 && (
                   <div style={{ marginBottom: 28 }}>
                     <SectionHdr color="#e50914" label="🔴 Live Now" count={liveMatches.length} />
@@ -455,7 +495,6 @@ export default function SportsPage() {
                   </div>
                 )}
 
-                {/* STARTING WITHIN 24H */}
                 {within24h.length > 0 && (
                   <div style={{ marginBottom: 28 }}>
                     <SectionHdr color="#e50914" label="🔴 Starting within 24 hours" count={within24h.length} />
@@ -465,7 +504,6 @@ export default function SportsPage() {
                   </div>
                 )}
 
-                {/* EMPTY STATE — no live or soon */}
                 {liveMatches.length === 0 && within24h.length === 0 && (
                   <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ fontSize: 32 }}>🏏</div>
@@ -476,7 +514,6 @@ export default function SportsPage() {
                   </div>
                 )}
 
-                {/* WATCH LIVE CRICKET */}
                 <div style={{ marginBottom: 28 }}>
                   <SectionHdr color="#fff" label="📺 Watch Live Cricket" count={0} />
                   <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
@@ -498,7 +535,6 @@ export default function SportsPage() {
                   </div>
                 </div>
 
-                {/* UPCOMING MATCHES */}
                 {upcomingCricket.length > 0 && (
                   <div>
                     <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingCricket.length} />
@@ -508,11 +544,10 @@ export default function SportsPage() {
                   </div>
                 )}
 
-                {/* NO MATCHES AT ALL */}
                 {cricketMatches.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '40px 0', color: '#333' }}>
                     <div style={{ fontSize: 32, marginBottom: 10 }}>🏏</div>
-                    <div style={{ fontSize: 14 }}>No IPL or international matches in the next 10 days</div>
+                    <div style={{ fontSize: 14 }}>No matches in the next 10 days</div>
                   </div>
                 )}
               </>
@@ -523,7 +558,6 @@ export default function SportsPage() {
         {/* ── FOOTBALL TAB ── */}
         {sport === 'football' && (
           <div>
-            {/* WATCH LIVE FOOTBALL */}
             <div style={{ marginBottom: 28 }}>
               <SectionHdr color="#fff" label="📺 Watch Live Football" count={0} />
               <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
@@ -545,9 +579,7 @@ export default function SportsPage() {
               </div>
             </div>
 
-            {footLoading && (
-              <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>⚽ Loading matches...</div>
-            )}
+            {footLoading && <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>⚽ Loading matches...</div>}
 
             {!footLoading && footballMatches.length > 0 && (
               <div>
@@ -571,9 +603,7 @@ export default function SportsPage() {
         {sport === 'highlights' && (
           <div>
             <SectionHdr color="#fff" label="🎬 Latest Highlights" count={highlights.length} />
-            {highLoading && (
-              <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>🎬 Loading highlights...</div>
-            )}
+            {highLoading && <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>🎬 Loading highlights...</div>}
             {!highLoading && highlights.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#444' }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>🎬</div>
