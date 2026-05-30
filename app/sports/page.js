@@ -27,49 +27,24 @@ const FOOTBALL_CHANNELS = [
   { label: '⭐ LaLiga TV', hd: 57, desc: 'La Liga' },
 ];
 
-// ─── STRICT FILTER CONFIG ─────────────────────────────────────────────────────
-
-// Exact team names as Highlightly returns them (lowercase for comparison)
+// ─── STRICT CRICKET FILTER ────────────────────────────────────────────────────
 const ALLOWED_NATIONS = [
-  'australia',
-  'south africa',
-  'bangladesh',
-  'new zealand',
-  'india',
-  'afghanistan',
-  'west indies',
-  'zimbabwe',
-  'england',
-  'sri lanka',
-  'pakistan',
+  'australia', 'south africa', 'bangladesh', 'new zealand', 'india',
+  'afghanistan', 'west indies', 'zimbabwe', 'england', 'sri lanka', 'pakistan',
 ];
-
-// Only these exact format strings (Highlightly values, case-insensitive)
 const ALLOWED_FORMATS = ['test', 'odi', 't20i'];
-
-// IPL league name keywords
 const IPL_KEYWORDS = ['ipl', 'indian premier league'];
-
-// Words that disqualify a team — women's, youth, A-team, clubs
 const DISQUALIFY_WORDS = [
   'women', 'woman', 'female',
-  'u19', 'u-19', 'under-19', 'under 19', 'under19',
-  'u17', 'u16',
-  ' a ', ' a$', // "India A", "England A"
-  'emerging',
-  'lions', 'eagles', 'hawks', // common A-team nicknames
+  'u19', 'u-19', 'under-19', 'under 19', 'under19', 'u17', 'u16',
+  'emerging', 'lions', 'eagles', 'hawks',
 ];
 
 function isAllowedNation(teamName) {
   if (!teamName) return false;
   const name = teamName.toLowerCase().trim();
-
-  // Must not contain any disqualifying word
   if (DISQUALIFY_WORDS.some(w => name.includes(w))) return false;
-
-  // Must be exactly one of the 11 nations
-  // Use exact match OR "starts with" to handle slight suffix variations
-  return ALLOWED_NATIONS.some(n => name === n || name.startsWith(n + ' ') || name === n);
+  return ALLOWED_NATIONS.some(n => name === n || name.startsWith(n + ' '));
 }
 
 function isAllowedFormat(format) {
@@ -82,17 +57,39 @@ function isIPL(leagueName) {
 }
 
 function isAllowedMatch(leagueName, format, homeTeamName, awayTeamName) {
-  // Gate 1: IPL — always allow regardless of team names
   if (isIPL(leagueName)) return true;
-
-  // Gate 2: Must be a true international format
   if (!isAllowedFormat(format)) return false;
-
-  // Gate 3: BOTH teams must be from the allowed 11 nations (men's only)
   if (!isAllowedNation(homeTeamName)) return false;
   if (!isAllowedNation(awayTeamName)) return false;
-
   return true;
+}
+
+// ─── HIGHLIGHT FILTER ─────────────────────────────────────────────────────────
+const HIGHLIGHT_JUNK = [
+  'women', 'woman', 'female', 'u19', 'under-19', 'under 19',
+  'vitality blast', 'county', 'sheffield shield', 'ranji', 'vijay hazare',
+  'syed mushtaq', 'duleep', 'irani', 'super smash', 'ford trophy',
+  'plunket', 'csa t20', 'tier 2', 'tier2', 'ncl', 'bcl',
+  'lancashire', 'yorkshire', 'surrey', 'sussex', 'kent', 'middlesex',
+  'warwickshire', 'somerset', 'nottinghamshire', 'glamorgan', 'derbyshire',
+  'leicestershire', 'durham', 'hampshire', 'essex', 'worcestershire',
+  'the blaze', 'thunder', 'lightning', 'vipers', 'sunrisers', 'southern brave',
+  'oval invincibles', 'welsh fire', 'manchester originals', 'trent rockets',
+  'london spirit', 'northern superchargers',
+];
+
+const HIGHLIGHT_ALLOWED = [
+  'ipl', 'indian premier',
+  'australia', 'south africa', 'bangladesh', 'new zealand', 'india',
+  'afghanistan', 'west indies', 'zimbabwe', 'england', 'sri lanka', 'pakistan',
+];
+
+function isAllowedHighlight(h) {
+  const title = (h.title || '').toLowerCase();
+  const league = (h.league?.name || h.league || '').toLowerCase();
+  const combined = title + ' ' + league;
+  if (HIGHLIGHT_JUNK.some(k => combined.includes(k))) return false;
+  return HIGHLIGHT_ALLOWED.some(k => combined.includes(k));
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -159,22 +156,12 @@ async function fetchHighlightlyCricket() {
     for (const m of arr) {
       if (!m.id || seen.has(m.id)) continue;
       seen.add(m.id);
-
       const state = (m.state?.description || '').toLowerCase();
       if (state === 'finished') continue;
-
-      if (!isAllowedMatch(
-        m.league?.name,
-        m.format,
-        m.homeTeam?.name,
-        m.awayTeam?.name
-      )) continue;
-
+      if (!isAllowedMatch(m.league?.name, m.format, m.homeTeam?.name, m.awayTeam?.name)) continue;
       const startMs = new Date(m.startTime).getTime();
       if (!m.startTime || startMs < Date.now() - 3 * 3600000) continue;
-
       const isLive = state !== '' && state !== 'not started' && state !== 'scheduled';
-
       matches.push({
         id: m.id,
         homeTeam: m.homeTeam,
@@ -319,50 +306,35 @@ function FootballCard({ match }) {
 
 // ─── HIGHLIGHT CARD ───────────────────────────────────────────────────────────
 function HighlightCard({ h }) {
-  const [open, setOpen] = useState(false);
   const thumb = h.thumbnail || h.image || h.thumbnailUrl;
   const url = h.url || h.videoUrl || h.embedUrl;
   const title = h.title || h.match || 'Highlight';
-  return (
-    <>
-      <div
-        style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s' }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-        onClick={() => setOpen(true)}
-      >
-        <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-          {thumb
-            ? <img src={thumb} alt={title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-            : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🏏</div>}
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(229,9,20,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>▶</div>
-          </div>
-          <div style={{ position: 'absolute', top: 8, left: 8, background: '#e50914', color: '#fff', fontSize: 7, fontWeight: 700, padding: '2px 5px', borderRadius: 3 }}>HIGHLIGHT</div>
-        </div>
-        <div style={{ padding: '8px 10px' }}>
-          <div style={{ fontSize: 11, color: '#fff', fontWeight: 600, marginBottom: 2, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{title}</div>
-          <div style={{ fontSize: 9, color: '#444' }}>{h.league?.name || h.league || ''}</div>
-        </div>
-      </div>
 
-      {open && (
-        <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
-          onClick={() => setOpen(false)}
-        >
-          <div style={{ width: '100%', maxWidth: 800 }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 13, color: '#fff', fontWeight: 600 }}>{title}</div>
-              <button onClick={() => setOpen(false)} style={{ background: '#1a1a2e', border: 'none', color: '#aaa', fontSize: 16, cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', fontFamily: 'inherit' }}>✕</button>
-            </div>
-            <div style={{ position: 'relative', paddingTop: '56.25%', borderRadius: 12, overflow: 'hidden', background: '#000' }}>
-              <iframe src={url} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }} allowFullScreen allow="autoplay; encrypted-media; fullscreen" />
-            </div>
-          </div>
+  const handleClick = () => {
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  return (
+    <div
+      style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', cursor: url ? 'pointer' : 'default', transition: 'transform 0.2s' }}
+      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
+      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+      onClick={handleClick}
+    >
+      <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
+        {thumb
+          ? <img src={thumb} alt={title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🏏</div>}
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(229,9,20,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>▶</div>
         </div>
-      )}
-    </>
+        <div style={{ position: 'absolute', top: 8, left: 8, background: '#e50914', color: '#fff', fontSize: 7, fontWeight: 700, padding: '2px 5px', borderRadius: 3 }}>HIGHLIGHT</div>
+      </div>
+      <div style={{ padding: '8px 10px' }}>
+        <div style={{ fontSize: 11, color: '#fff', fontWeight: 600, marginBottom: 2, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{title}</div>
+        <div style={{ fontSize: 9, color: '#444' }}>{h.league?.name || h.league || ''}</div>
+      </div>
+    </div>
   );
 }
 
@@ -446,6 +418,7 @@ export default function SportsPage() {
           for (const h of r.value) {
             if (!h.id || seen.has(h.id)) continue;
             seen.add(h.id);
+            if (!isAllowedHighlight(h)) continue;
             all.push(h);
           }
         }
@@ -508,7 +481,6 @@ export default function SportsPage() {
             {cricketLoading && (
               <div style={{ textAlign: 'center', padding: 80, color: '#333' }}>🏏 Loading matches...</div>
             )}
-
             {!cricketLoading && (
               <>
                 {liveMatches.length > 0 && (
@@ -519,7 +491,6 @@ export default function SportsPage() {
                     </div>
                   </div>
                 )}
-
                 {within24h.length > 0 && (
                   <div style={{ marginBottom: 28 }}>
                     <SectionHdr color="#e50914" label="🔴 Starting within 24 hours" count={within24h.length} />
@@ -528,7 +499,6 @@ export default function SportsPage() {
                     </div>
                   </div>
                 )}
-
                 {liveMatches.length === 0 && within24h.length === 0 && (
                   <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ fontSize: 32 }}>🏏</div>
@@ -538,7 +508,6 @@ export default function SportsPage() {
                     </div>
                   </div>
                 )}
-
                 <div style={{ marginBottom: 28 }}>
                   <SectionHdr color="#fff" label="📺 Watch Live Cricket" count={0} />
                   <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
@@ -559,7 +528,6 @@ export default function SportsPage() {
                     </div>
                   </div>
                 </div>
-
                 {upcomingCricket.length > 0 && (
                   <div>
                     <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={upcomingCricket.length} />
@@ -568,7 +536,6 @@ export default function SportsPage() {
                     </div>
                   </div>
                 )}
-
                 {cricketMatches.length === 0 && (
                   <div style={{ textAlign: 'center', padding: '40px 0', color: '#333' }}>
                     <div style={{ fontSize: 32, marginBottom: 10 }}>🏏</div>
@@ -603,9 +570,7 @@ export default function SportsPage() {
                 </div>
               </div>
             </div>
-
             {footLoading && <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>⚽ Loading matches...</div>}
-
             {!footLoading && footballMatches.length > 0 && (
               <div>
                 <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={footballMatches.length} />
@@ -614,7 +579,6 @@ export default function SportsPage() {
                 </div>
               </div>
             )}
-
             {!footLoading && footballMatches.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#333' }}>
                 <div style={{ fontSize: 32, marginBottom: 10 }}>⚽</div>
