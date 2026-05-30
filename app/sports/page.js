@@ -405,7 +405,7 @@ export default function SportsPage() {
             if (md < now || md.getFullYear() < 2026) return false;
           } catch { return false; }
           const league = getFootballLeague(m);
-return league !== null && league !== 'wc' && league !== 'cwc';
+          return league !== null && league !== 'wc' && league !== 'cwc';
       }),
       fetchWorldCup(),
     ]).then(([sportexResult, wcResult]) => {
