@@ -306,10 +306,19 @@ function FootballCard({ match }) {
 
 // ─── HIGHLIGHT CARD ───────────────────────────────────────────────────────────
 function HighlightCard({ h }) {
-  const thumb = h.thumbnail || h.thumbnailUrl || h.image || h.cover
-  || h.video?.thumbnail || h.match?.thumbnail || null;
-const url = h.url || h.videoUrl || h.embedUrl
-  || h.video?.url || h.highlightUrl || null;
+  // Try every possible field Highlightly might use
+const thumb = h.thumbnail || h.thumbnailUrl || h.image 
+  || h.cover || h.poster || h.imgUrl || h.imageUrl
+  || h.video?.thumbnail || h.videos?.[0]?.thumbnail
+  || h.highlights?.thumbnail || null;
+
+const url = h.url || h.videoUrl || h.embedUrl 
+  || h.link || h.highlightUrl || h.youtubeUrl
+  || h.video?.url || h.videos?.[0]?.url
+  || h.highlights?.url || null;
+
+// Debug: log to console so we can see the structure
+if (typeof window !== 'undefined') console.log('Highlight object:', JSON.stringify(h));
   const title = h.title || h.match || 'Highlight';
 
   const handleClick = () => {
