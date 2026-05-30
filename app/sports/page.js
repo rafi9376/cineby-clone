@@ -73,7 +73,6 @@ const DISQUALIFY_WORDS = [
   'u19', 'u-19', 'under-19', 'under 19', 'under19', 'u17', 'u16',
   'emerging', 'lions', 'eagles', 'hawks',
 ];
-
 function isAllowedNation(teamName) {
   if (!teamName) return false;
   const name = teamName.toLowerCase().trim();
@@ -125,8 +124,7 @@ function isAllowedHighlight(h) {
 function toBDT(isoStr) {
   if (!isoStr) return '';
   return new Date(isoStr).toLocaleString('en-BD', {
-    timeZone: 'Asia/Dhaka',
-    month: 'short', day: 'numeric',
+    timeZone: 'Asia/Dhaka', month: 'short', day: 'numeric',
     hour: '2-digit', minute: '2-digit', hour12: true,
   }) + ' BDT';
 }
@@ -223,7 +221,7 @@ function Countdown({ isoStr }) {
   return <span style={{ color: '#f5c518', fontSize: 11, fontWeight: 700, fontFamily: 'monospace' }}>⏱ {String(time.h).padStart(2,'0')}:{String(time.m).padStart(2,'0')}:{String(time.s).padStart(2,'0')}</span>;
 }
 
-// ─── PLAYER MODAL ─────────────────────────────────────────────────────────────
+// ─── CRICKET CHANNEL MODAL ────────────────────────────────────────────────────
 function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
   useEffect(() => { const h = e => e.key === 'Escape' && onClose(); window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h); }, [onClose]);
   return (
@@ -248,6 +246,51 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
         </div>
         <div style={{ padding: '8px 16px', background: '#070710', borderTop: '1px solid #1a1a2e' }}>
           <div style={{ fontSize: 10, color: '#333' }}>If stream is not working, switch to another channel above · Press Esc to close</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MATCH STREAM MODAL (EmbedSportex direct streams) ────────────────────────
+function MatchStreamModal({ match, onClose }) {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const iframes = match.iframes || [];
+  const teams = match.tag ? match.tag.split(' vs ') : ['Team 1', 'Team 2'];
+  useEffect(() => { const h = e => e.key === 'Escape' && onClose(); window.addEventListener('keydown', h); return () => window.removeEventListener('keydown', h); }, [onClose]);
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+      <div style={{ width: '100%', maxWidth: 920, background: '#0e0e1a', borderRadius: 16, overflow: 'hidden', border: '1px solid #e50914' }}>
+        <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1a1a2e' }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>⚽ {teams[0]} vs {teams[1]}</div>
+            <div style={{ fontSize: 10, color: '#444', marginTop: 2 }}>{match.league}</div>
+          </div>
+          <button onClick={onClose} style={{ background: '#1a1a2e', border: 'none', color: '#aaa', fontSize: 16, cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit' }}>✕</button>
+        </div>
+        {iframes.length > 1 && (
+          <div style={{ padding: '10px 16px', display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid #1a1a2e', background: '#070710' }}>
+            {iframes.map((iframe, i) => (
+              <button key={i} onClick={() => setActiveIdx(i)}
+                style={{ background: activeIdx === i ? '#e50914' : '#0e0e1a', border: '1px solid ' + (activeIdx === i ? '#e50914' : '#1a1a2e'), borderRadius: 16, padding: '5px 14px', cursor: 'pointer', fontFamily: 'inherit', fontSize: 10, fontWeight: 700, color: '#fff' }}>
+                {iframe.server || `Stream ${i + 1}`}
+              </button>
+            ))}
+          </div>
+        )}
+        <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
+          {iframes[activeIdx]?.url ? (
+            <iframe key={activeIdx} src={iframes[activeIdx].url}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+              scrolling="no" allowFullScreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture" />
+          ) : (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#444', fontSize: 13 }}>
+              Stream not available yet. Try closer to match time.
+            </div>
+          )}
+        </div>
+        <div style={{ padding: '8px 16px', background: '#070710', borderTop: '1px solid #1a1a2e' }}>
+          <div style={{ fontSize: 10, color: '#333' }}>If stream is not working, switch server above · Press Esc to close</div>
         </div>
       </div>
     </div>
@@ -285,19 +328,29 @@ function CricketCard({ match }) {
   );
 }
 
-// ─── FOOTBALL CARD ────────────────────────────────────────────────────────────
-function FootballCard({ match }) {
+// ─── FOOTBALL CARD (clickable — opens match stream) ───────────────────────────
+function FootballCard({ match, onWatch, onWatchChannels }) {
   const teams = match.tag ? match.tag.split(' vs ') : ['Team 1', 'Team 2'];
+  const hasStream = match.iframes && match.iframes.length > 0;
   return (
-    <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
+    <div
+      onClick={() => hasStream ? onWatch(match) : onWatchChannels()}
+      style={{ background: '#0e0e1a', border: '1px solid ' + (hasStream ? '#e50914' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s', cursor: 'pointer' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+    >
       <div style={{ height: 64, background: '#05050f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative', overflow: 'hidden' }}>
         {match.poster && <img src={match.poster} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.22 }} />}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>⚽</div>
           <div style={{ fontSize: 8, color: '#2a2a3e', fontWeight: 700 }}>VS</div>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>⚽</div>
+        </div>
+        <div style={{ position: 'absolute', top: 6, right: 7 }}>
+          {hasStream
+            ? <span style={{ background: '#e50914', color: '#fff', fontSize: 7, fontWeight: 700, padding: '2px 6px', borderRadius: 3 }}>▶ WATCH</span>
+            : <span style={{ background: '#1a3a1a', color: '#4caf50', fontSize: 7, fontWeight: 700, padding: '2px 6px', borderRadius: 3 }}>📺 CHANNELS</span>
+          }
         </div>
       </div>
       <div style={{ padding: '9px 11px' }}>
@@ -312,16 +365,22 @@ function FootballCard({ match }) {
   );
 }
 
-// ─── WORLD CUP CARD ───────────────────────────────────────────────────────────
-function WorldCupCard({ match }) {
+// ─── WORLD CUP CARD (clickable — opens channel modal) ────────────────────────
+function WorldCupCard({ match, onWatchChannels }) {
   return (
-    <div style={{ background: 'linear-gradient(135deg, #0a1a0a, #0d1a0d)', border: '1px solid #1a3a1a', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
+    <div
+      onClick={onWatchChannels}
+      style={{ background: 'linear-gradient(135deg, #0a1a0a, #0d1a0d)', border: '1px solid #1a3a1a', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s', cursor: 'pointer' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-      <div style={{ height: 64, background: '#050f05', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+    >
+      <div style={{ height: 64, background: '#050f05', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative' }}>
         <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#0d220d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>🌍</div>
         <div style={{ fontSize: 8, color: '#1a3a1a', fontWeight: 700 }}>VS</div>
         <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#0d220d', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>🌍</div>
+        <div style={{ position: 'absolute', top: 6, right: 7 }}>
+          <span style={{ background: '#1a3a1a', color: '#4caf50', fontSize: 7, fontWeight: 700, padding: '2px 6px', borderRadius: 3 }}>📺 WATCH</span>
+        </div>
       </div>
       <div style={{ padding: '9px 11px' }}>
         <div style={{ fontSize: 8, color: '#4a8a4a', marginBottom: 4 }}>{match.round}{match.group ? ' · ' + match.group : ''}</div>
@@ -368,7 +427,7 @@ function SectionHdr({ color, label, count }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color, letterSpacing: 2, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</div>
-      {count > 0 && <div style={{ background: color === '#e50914' ? 'rgba(229,9,20,0.12)' : color === '#f5c518' ? 'rgba(245,197,24,0.1)' : 'rgba(255,255,255,0.05)', color, fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10 }}>{count}</div>}
+      {count > 0 && <div style={{ background: color === '#e50914' ? 'rgba(229,9,20,0.12)' : color === '#f5c518' ? 'rgba(245,197,24,0.1)' : color === '#4caf50' ? 'rgba(76,175,80,0.12)' : 'rgba(255,255,255,0.05)', color, fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10 }}>{count}</div>}
       <div style={{ flex: 1, height: 1, background: '#1a1a2e' }}></div>
     </div>
   );
@@ -386,6 +445,7 @@ export default function SportsPage() {
   const [highLoading, setHighLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalChannel, setModalChannel] = useState(0);
+  const [selectedFootballMatch, setSelectedFootballMatch] = useState(null);
 
   useEffect(() => {
     setCricketLoading(true);
@@ -447,11 +507,14 @@ export default function SportsPage() {
   const upcomingCricket = cricketMatches.filter(m => { if (m.isLive) return false; const cd = getCountdown(m.startTime); return cd && cd.diff >= 86400000; });
   const footballByLeague = FOOTBALL_LEAGUES.map(league => ({ ...league, matches: footballMatches.filter(m => getFootballLeague(m) === league.id) })).filter(l => l.matches.length > 0);
   const channels = sport === 'cricket' ? CRICKET_CHANNELS : FOOTBALL_CHANNELS;
+  const openChannelModal = () => { setModalChannel(0); setModalOpen(true); };
 
   return (
     <>
       <Navbar />
       {modalOpen && <PlayerModal sport={sport} channel={modalChannel} channels={channels} onClose={() => setModalOpen(false)} onChannelChange={setModalChannel} />}
+      {selectedFootballMatch && <MatchStreamModal match={selectedFootballMatch} onClose={() => setSelectedFootballMatch(null)} />}
+
       <div style={{ background: '#070710', minHeight: '100vh', padding: '90px 48px 48px', fontFamily: 'Outfit, sans-serif' }}>
 
         {/* TABS */}
@@ -563,7 +626,9 @@ export default function SportsPage() {
               <div style={{ marginBottom: 32 }}>
                 <SectionHdr color="#4caf50" label="🌍 FIFA World Cup 2026" count={worldCupMatches.length} />
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                  {worldCupMatches.slice(0, 24).map(m => <WorldCupCard key={m.id} match={m} />)}
+                  {worldCupMatches.slice(0, 24).map(m => (
+                    <WorldCupCard key={m.id} match={m} onWatchChannels={openChannelModal} />
+                  ))}
                 </div>
                 {worldCupMatches.length > 24 && (
                   <div style={{ textAlign: 'center', marginTop: 12, color: '#444', fontSize: 12 }}>
@@ -578,7 +643,9 @@ export default function SportsPage() {
               <div key={league.id} style={{ marginBottom: 32 }}>
                 <SectionHdr color="#f5c518" label={league.label} count={league.matches.length} />
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                  {league.matches.map((m, i) => <FootballCard key={m.slug || i} match={m} />)}
+                  {league.matches.map((m, i) => (
+                    <FootballCard key={m.slug || i} match={m} onWatch={setSelectedFootballMatch} onWatchChannels={openChannelModal} />
+                  ))}
                 </div>
               </div>
             ))}
