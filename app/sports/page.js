@@ -306,8 +306,10 @@ function FootballCard({ match }) {
 
 // ─── HIGHLIGHT CARD ───────────────────────────────────────────────────────────
 function HighlightCard({ h }) {
-  const thumb = h.thumbnail || h.image || h.thumbnailUrl;
-  const url = h.url || h.videoUrl || h.embedUrl;
+  const thumb = h.thumbnail || h.thumbnailUrl || h.image || h.cover
+  || h.video?.thumbnail || h.match?.thumbnail || null;
+const url = h.url || h.videoUrl || h.embedUrl
+  || h.video?.url || h.highlightUrl || null;
   const title = h.title || h.match || 'Highlight';
 
   const handleClick = () => {
