@@ -396,8 +396,6 @@ export default function SportsPage() {
     if (sport !== 'football' || footballMatches.length > 0) return;
     setFootLoading(true);
     Promise.allSettled([
-      setFootLoading(true);
-    Promise.allSettled([
       fetch(EMBEDSPORTEX_URL).then(r => r.json()).then(d => {
         const now = new Date();
         return (d.football || []).filter(m => {
