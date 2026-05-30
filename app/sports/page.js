@@ -421,11 +421,36 @@ export default function SportsPage() {
   useEffect(() => {
     if (sport !== 'highlights' || highlights.length > 0) return;
     setHighLoading(true);
-    fetch(`${HIGHLIGHTLY_BASE}/highlights?limit=16`, {
-      headers: { 'x-rapidapi-key': HIGHLIGHT_API_KEY },
-    })
-      .then(r => r.json())
-      .then(d => setHighlights(Array.isArray(d) ? d : (d.data || [])))
+
+    const today = new Date();
+    const dates = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      return d.toISOString().slice(0, 10);
+    });
+
+    Promise.allSettled(
+      dates.map(date =>
+        fetch(`${HIGHLIGHTLY_BASE}/highlights?date=${date}&limit=8`, {
+          headers: { 'x-rapidapi-key': HIGHLIGHT_API_KEY },
+        })
+          .then(r => r.ok ? r.json() : [])
+          .then(d => Array.isArray(d) ? d : (d.data || []))
+      )
+    )
+      .then(results => {
+        const seen = new Set();
+        const all = [];
+        for (const r of results) {
+          if (r.status !== 'fulfilled') continue;
+          for (const h of r.value) {
+            if (!h.id || seen.has(h.id)) continue;
+            seen.add(h.id);
+            all.push(h);
+          }
+        }
+        setHighlights(all);
+      })
       .catch(() => {})
       .finally(() => setHighLoading(false));
   }, [sport]);
