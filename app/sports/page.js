@@ -27,7 +27,34 @@ const FOOTBALL_CHANNELS = [
   { label: '⭐ LaLiga TV', hd: 57, desc: 'La Liga' },
 ];
 
-// ─── STRICT CRICKET FILTER ────────────────────────────────────────────────────
+// ─── FOOTBALL LEAGUE CONFIG ───────────────────────────────────────────────────
+const FOOTBALL_LEAGUES = [
+  { id: 'ucl',   label: '🏆 UEFA Champions League', keywords: ['champions league', 'uefa champions'] },
+  { id: 'epl',   label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 English Premier League', keywords: ['premier league', 'english premier'] },
+  { id: 'laliga',label: '🇪🇸 La Liga',               keywords: ['la liga', 'laliga primera', 'primera division'] },
+  { id: 'laliga2',label: '🇪🇸 La Liga 2',            keywords: ['la liga 2', 'laliga 2', 'segunda division', 'laliga smartbank'] },
+  { id: 'copa',  label: '🇪🇸 Copa del Rey',          keywords: ['copa del rey'] },
+  { id: 'ssc',   label: '🇪🇸 Spanish Super Cup',     keywords: ['spanish super cup', 'supercopa de espana', 'supercopa españa'] },
+  { id: 'facup', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 FA Cup',              keywords: ['fa cup'] },
+  { id: 'copaam',label: '🌎 Copa America',           keywords: ['copa america', 'copa américa'] },
+  { id: 'euro',  label: '🌍 UEFA Euro',              keywords: ['euro 20', 'uefa euro', 'european championship'] },
+  { id: 'cwc',   label: '🌍 FIFA Club World Cup',    keywords: ['club world cup', 'fifa cwc', 'club world championship'] },
+  { id: 'bund',  label: '🇩🇪 Bundesliga',            keywords: ['bundesliga'] },
+  { id: 'l1',    label: '🇫🇷 Ligue 1',              keywords: ['ligue 1', 'ligue1'] },
+  { id: 'seriea',label: '🇮🇹 Serie A',              keywords: ['serie a', 'serie-a'] },
+  { id: 'afc',   label: '🌏 AFC Championship',       keywords: ['afc championship', 'afc champions', 'asian football confederation', 'afc cup'] },
+  { id: 'spl',   label: '🇸🇦 Saudi Pro League',      keywords: ['saudi pro league', 'saudi professional league', 'roshn saudi league'] },
+];
+
+function getFootballLeague(match) {
+  const league = (match.league || match.competition || match.tag || '').toLowerCase();
+  for (const l of FOOTBALL_LEAGUES) {
+    if (l.keywords.some(k => league.includes(k))) return l.id;
+  }
+  return null;
+}
+
+// ─── CRICKET FILTER CONFIG ────────────────────────────────────────────────────
 const ALLOWED_NATIONS = [
   'australia', 'south africa', 'bangladesh', 'new zealand', 'india',
   'afghanistan', 'west indies', 'zimbabwe', 'england', 'sri lanka', 'pakistan',
@@ -46,16 +73,13 @@ function isAllowedNation(teamName) {
   if (DISQUALIFY_WORDS.some(w => name.includes(w))) return false;
   return ALLOWED_NATIONS.some(n => name === n || name.startsWith(n + ' '));
 }
-
 function isAllowedFormat(format) {
   return ALLOWED_FORMATS.includes((format || '').toLowerCase().trim());
 }
-
 function isIPL(leagueName) {
   const l = (leagueName || '').toLowerCase();
   return IPL_KEYWORDS.some(k => l.includes(k));
 }
-
 function isAllowedMatch(leagueName, format, homeTeamName, awayTeamName) {
   if (isIPL(leagueName)) return true;
   if (!isAllowedFormat(format)) return false;
@@ -73,17 +97,15 @@ const HIGHLIGHT_JUNK = [
   'lancashire', 'yorkshire', 'surrey', 'sussex', 'kent', 'middlesex',
   'warwickshire', 'somerset', 'nottinghamshire', 'glamorgan', 'derbyshire',
   'leicestershire', 'durham', 'hampshire', 'essex', 'worcestershire',
-  'the blaze', 'thunder', 'lightning', 'vipers', 'sunrisers', 'southern brave',
+  'the blaze', 'thunder', 'lightning', 'vipers', 'sunrisers women',
   'oval invincibles', 'welsh fire', 'manchester originals', 'trent rockets',
   'london spirit', 'northern superchargers',
 ];
-
 const HIGHLIGHT_ALLOWED = [
   'ipl', 'indian premier',
   'australia', 'south africa', 'bangladesh', 'new zealand', 'india',
   'afghanistan', 'west indies', 'zimbabwe', 'england', 'sri lanka', 'pakistan',
 ];
-
 function isAllowedHighlight(h) {
   const title = (h.title || '').toLowerCase();
   const league = (h.league?.name || h.league || '').toLowerCase();
@@ -106,12 +128,7 @@ function getCountdown(isoStr) {
   if (!isoStr) return null;
   const diff = new Date(isoStr) - new Date();
   if (diff <= 0) return null;
-  return {
-    h: Math.floor(diff / 3600000),
-    m: Math.floor((diff % 3600000) / 60000),
-    s: Math.floor((diff % 60000) / 1000),
-    diff,
-  };
+  return { h: Math.floor(diff / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000), diff };
 }
 
 function isUpcomingFootball(m) {
@@ -123,10 +140,7 @@ function footballToBDT(kickoff) {
   if (!kickoff) return '';
   try {
     const bdt = new Date(new Date(kickoff.replace(' ', 'T') + '+07:00').getTime() - 3600000);
-    return bdt.toLocaleString('en-US', {
-      month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit', hour12: true,
-    }) + ' BDT';
+    return bdt.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) + ' BDT';
   } catch { return ''; }
 }
 
@@ -138,7 +152,6 @@ async function fetchHighlightlyCricket() {
     d.setDate(today.getDate() + i);
     return d.toISOString().slice(0, 10);
   });
-
   const results = await Promise.allSettled(
     dates.map(date =>
       fetch(`${HIGHLIGHTLY_BASE}/matches?date=${date}`, {
@@ -146,10 +159,8 @@ async function fetchHighlightlyCricket() {
       }).then(r => r.ok ? r.json() : [])
     )
   );
-
   const seen = new Set();
   const matches = [];
-
   for (const r of results) {
     if (r.status !== 'fulfilled') continue;
     const arr = Array.isArray(r.value) ? r.value : (r.value?.data || []);
@@ -163,17 +174,12 @@ async function fetchHighlightlyCricket() {
       if (!m.startTime || startMs < Date.now() - 3 * 3600000) continue;
       const isLive = state !== '' && state !== 'not started' && state !== 'scheduled';
       matches.push({
-        id: m.id,
-        homeTeam: m.homeTeam,
-        awayTeam: m.awayTeam,
-        league: m.league?.name || '',
-        format: m.format || '',
-        startTime: m.startTime,
-        isLive,
+        id: m.id, homeTeam: m.homeTeam, awayTeam: m.awayTeam,
+        league: m.league?.name || '', format: m.format || '',
+        startTime: m.startTime, isLive,
       });
     }
   }
-
   matches.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
   return matches;
 }
@@ -188,7 +194,7 @@ function Countdown({ isoStr }) {
   if (!time) return null;
   return (
     <span style={{ color: '#f5c518', fontSize: 11, fontWeight: 700, fontFamily: 'monospace' }}>
-      ⏱ {String(time.h).padStart(2, '0')}:{String(time.m).padStart(2, '0')}:{String(time.s).padStart(2, '0')}
+      ⏱ {String(time.h).padStart(2,'0')}:{String(time.m).padStart(2,'0')}:{String(time.s).padStart(2,'0')}
     </span>
   );
 }
@@ -200,14 +206,11 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
-
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div style={{ width: '100%', maxWidth: 920, background: '#0e0e1a', borderRadius: 16, overflow: 'hidden', border: '1px solid #e50914' }}>
         <div style={{ padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #1a1a2e' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>
-            Live {sport === 'cricket' ? '🏏 Cricket' : '⚽ Football'} Stream
-          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>Live {sport === 'cricket' ? '🏏 Cricket' : '⚽ Football'} Stream</div>
           <button onClick={onClose} style={{ background: '#1a1a2e', border: 'none', color: '#aaa', fontSize: 16, cursor: 'pointer', width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit' }}>✕</button>
         </div>
         <div style={{ padding: '10px 16px', display: 'flex', gap: 6, flexWrap: 'wrap', borderBottom: '1px solid #1a1a2e', background: '#070710' }}>
@@ -219,14 +222,9 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
           ))}
         </div>
         <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-          <iframe
-            key={channel}
-            src={'https://streamcrichd.com/update/fetch.php?hd=' + channels[channel].hd + '&embed=1'}
+          <iframe key={channel} src={'https://streamcrichd.com/update/fetch.php?hd=' + channels[channel].hd + '&embed=1'}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
-            scrolling="no"
-            allowFullScreen
-            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-          />
+            scrolling="no" allowFullScreen allow="autoplay; encrypted-media; fullscreen; picture-in-picture" />
         </div>
         <div style={{ padding: '8px 16px', background: '#070710', borderTop: '1px solid #1a1a2e' }}>
           <div style={{ fontSize: 10, color: '#333' }}>If stream is not working, switch to another channel above · Press Esc to close</div>
@@ -240,20 +238,15 @@ function PlayerModal({ sport, channel, onClose, onChannelChange, channels }) {
 function CricketCard({ match }) {
   const cd = getCountdown(match.startTime);
   const isWithin24h = cd && cd.diff < 86400000;
-
   return (
-    <div
-      style={{ background: '#0e0e1a', border: '1px solid ' + (match.isLive ? '#e50914' : isWithin24h ? 'rgba(229,9,20,0.35)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
+    <div style={{ background: '#0e0e1a', border: '1px solid ' + (match.isLive ? '#e50914' : isWithin24h ? 'rgba(229,9,20,0.35)' : '#1a1a2e'), borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-    >
+      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
       <div style={{ height: 72, background: match.isLive ? '#140505' : isWithin24h ? '#0f0505' : '#05050f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'relative' }}>
-        {match.homeTeam?.logo
-          ? <img src={match.homeTeam.logo} style={{ width: 32, height: 32, objectFit: 'contain' }} alt={match.homeTeam?.name} />
+        {match.homeTeam?.logo ? <img src={match.homeTeam.logo} style={{ width: 32, height: 32, objectFit: 'contain' }} alt={match.homeTeam?.name} />
           : <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🏏</div>}
         <div style={{ fontSize: 8, color: '#2a2a3e', fontWeight: 700 }}>VS</div>
-        {match.awayTeam?.logo
-          ? <img src={match.awayTeam.logo} style={{ width: 32, height: 32, objectFit: 'contain' }} alt={match.awayTeam?.name} />
+        {match.awayTeam?.logo ? <img src={match.awayTeam.logo} style={{ width: 32, height: 32, objectFit: 'contain' }} alt={match.awayTeam?.name} />
           : <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>🏏</div>}
         <div style={{ position: 'absolute', top: 6, left: 7 }}>
           {match.isLive && <span style={{ background: '#e50914', color: '#fff', fontSize: 7, fontWeight: 700, padding: '2px 6px', borderRadius: 3, letterSpacing: 1 }}>🔴 LIVE</span>}
@@ -278,13 +271,11 @@ function CricketCard({ match }) {
 function FootballCard({ match }) {
   const teams = match.tag ? match.tag.split(' vs ') : ['Team 1', 'Team 2'];
   return (
-    <div
-      style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
+    <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-    >
-      <div style={{ height: 72, background: '#05050f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative', overflow: 'hidden' }}>
-        {match.poster && <img src={match.poster} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.25 }} />}
+      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+      <div style={{ height: 64, background: '#05050f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative', overflow: 'hidden' }}>
+        {match.poster && <img src={match.poster} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.22 }} />}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>⚽</div>
           <div style={{ fontSize: 8, color: '#2a2a3e', fontWeight: 700 }}>VS</div>
@@ -292,7 +283,6 @@ function FootballCard({ match }) {
         </div>
       </div>
       <div style={{ padding: '9px 11px' }}>
-        <div style={{ fontSize: 8, color: '#444', marginBottom: 2 }}>{match.league || 'Football'}</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginBottom: 5 }}>
           <div style={{ fontSize: 10, color: '#fff', fontWeight: 600, flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{teams[0]}</div>
           <div style={{ fontSize: 8, color: '#2a2a3e', flexShrink: 0 }}>vs</div>
@@ -306,19 +296,12 @@ function FootballCard({ match }) {
 
 // ─── HIGHLIGHT CARD ───────────────────────────────────────────────────────────
 function HighlightCard({ h }) {
-  // Try every possible field Highlightly might use
-const thumb = h.thumbnail || h.thumbnailUrl || h.image 
-  || h.cover || h.poster || h.imgUrl || h.imageUrl
-  || h.video?.thumbnail || h.videos?.[0]?.thumbnail
-  || h.highlights?.thumbnail || null;
-
-const url = h.url || h.videoUrl || h.embedUrl 
-  || h.link || h.highlightUrl || h.youtubeUrl
-  || h.video?.url || h.videos?.[0]?.url
-  || h.highlights?.url || null;
-
-// Debug: log to console so we can see the structure
-if (typeof window !== 'undefined') console.log('Highlight object:', JSON.stringify(h));
+  const thumb = h.thumbnail || h.thumbnailUrl || h.image || h.cover
+    || h.poster || h.imgUrl || h.imageUrl
+    || h.video?.thumbnail || h.videos?.[0]?.thumbnail || null;
+  const url = h.url || h.videoUrl || h.embedUrl
+    || h.link || h.highlightUrl || h.youtubeUrl
+    || h.video?.url || h.videos?.[0]?.url || null;
   const title = h.title || h.match || 'Highlight';
 
   const handleClick = () => {
@@ -326,15 +309,12 @@ if (typeof window !== 'undefined') console.log('Highlight object:', JSON.stringi
   };
 
   return (
-    <div
-      style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', cursor: url ? 'pointer' : 'default', transition: 'transform 0.2s' }}
+    <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 12, overflow: 'hidden', cursor: url ? 'pointer' : 'default', transition: 'transform 0.2s' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-      onClick={handleClick}
-    >
+      onClick={handleClick}>
       <div style={{ position: 'relative', paddingTop: '56.25%', background: '#000' }}>
-        {thumb
-          ? <img src={thumb} alt={title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        {thumb ? <img src={thumb} alt={title} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
           : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🏏</div>}
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(229,9,20,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>▶</div>
@@ -354,9 +334,7 @@ function SectionHdr({ color, label, count }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
       <div style={{ fontSize: 10, fontWeight: 700, color, letterSpacing: 2, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</div>
-      {count > 0 && (
-        <div style={{ background: color === '#e50914' ? 'rgba(229,9,20,0.12)' : color === '#f5c518' ? 'rgba(245,197,24,0.1)' : 'rgba(255,255,255,0.05)', color, fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10 }}>{count}</div>
-      )}
+      {count > 0 && <div style={{ background: color === '#e50914' ? 'rgba(229,9,20,0.12)' : color === '#f5c518' ? 'rgba(245,197,24,0.1)' : 'rgba(255,255,255,0.05)', color, fontSize: 10, fontWeight: 700, padding: '1px 7px', borderRadius: 10 }}>{count}</div>}
       <div style={{ flex: 1, height: 1, background: '#1a1a2e' }}></div>
     </div>
   );
@@ -376,9 +354,7 @@ export default function SportsPage() {
 
   useEffect(() => {
     setCricketLoading(true);
-    fetchHighlightlyCricket()
-      .then(setCricketMatches)
-      .finally(() => setCricketLoading(false));
+    fetchHighlightlyCricket().then(setCricketMatches).finally(() => setCricketLoading(false));
   }, []);
 
   useEffect(() => {
@@ -392,8 +368,10 @@ export default function SportsPage() {
           if (!isUpcomingFootball(m)) return false;
           try {
             const matchDate = new Date(m.kickoff.replace(' ', 'T') + '+07:00');
-            return matchDate >= now && matchDate.getFullYear() >= 2026;
+            if (matchDate < now || matchDate.getFullYear() < 2026) return false;
           } catch { return false; }
+          // Only allowed leagues
+          return getFootballLeague(m) !== null;
         });
         setFootballMatches(all);
       })
@@ -404,39 +382,32 @@ export default function SportsPage() {
   useEffect(() => {
     if (sport !== 'highlights' || highlights.length > 0) return;
     setHighLoading(true);
-
     const today = new Date();
     const dates = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       return d.toISOString().slice(0, 10);
     });
-
     Promise.allSettled(
       dates.map(date =>
         fetch(`${HIGHLIGHTLY_BASE}/highlights?date=${date}&limit=8`, {
           headers: { 'x-rapidapi-key': HIGHLIGHT_API_KEY },
-        })
-          .then(r => r.ok ? r.json() : [])
-          .then(d => Array.isArray(d) ? d : (d.data || []))
+        }).then(r => r.ok ? r.json() : []).then(d => Array.isArray(d) ? d : (d.data || []))
       )
-    )
-      .then(results => {
-        const seen = new Set();
-        const all = [];
-        for (const r of results) {
-          if (r.status !== 'fulfilled') continue;
-          for (const h of r.value) {
-            if (!h.id || seen.has(h.id)) continue;
-            seen.add(h.id);
-            if (!isAllowedHighlight(h)) continue;
-            all.push(h);
-          }
+    ).then(results => {
+      const seen = new Set();
+      const all = [];
+      for (const r of results) {
+        if (r.status !== 'fulfilled') continue;
+        for (const h of r.value) {
+          if (!h.id || seen.has(h.id)) continue;
+          seen.add(h.id);
+          if (!isAllowedHighlight(h)) continue;
+          all.push(h);
         }
-        setHighlights(all);
-      })
-      .catch(() => {})
-      .finally(() => setHighLoading(false));
+      }
+      setHighlights(all);
+    }).catch(() => {}).finally(() => setHighLoading(false));
   }, [sport]);
 
   const liveMatches = cricketMatches.filter(m => m.isLive);
@@ -451,19 +422,20 @@ export default function SportsPage() {
     return cd && cd.diff >= 86400000;
   });
 
+  // Group football matches by league
+  const footballByLeague = FOOTBALL_LEAGUES.map(league => ({
+    ...league,
+    matches: footballMatches.filter(m => getFootballLeague(m) === league.id),
+  })).filter(l => l.matches.length > 0);
+
   const channels = sport === 'cricket' ? CRICKET_CHANNELS : FOOTBALL_CHANNELS;
 
   return (
     <>
       <Navbar />
       {modalOpen && (
-        <PlayerModal
-          sport={sport}
-          channel={modalChannel}
-          channels={channels}
-          onClose={() => setModalOpen(false)}
-          onChannelChange={setModalChannel}
-        />
+        <PlayerModal sport={sport} channel={modalChannel} channels={channels}
+          onClose={() => setModalOpen(false)} onChannelChange={setModalChannel} />
       )}
       <div style={{ background: '#070710', minHeight: '100vh', padding: '90px 48px 48px', fontFamily: 'Outfit, sans-serif' }}>
 
@@ -472,16 +444,11 @@ export default function SportsPage() {
           <Link href="/" style={{ color: '#444', fontSize: 12, textDecoration: 'none', flexShrink: 0 }}>← Home</Link>
           <div style={{ width: 1, height: 18, background: '#1a1a2e', flexShrink: 0 }}></div>
           <div style={{ display: 'flex', gap: 6 }}>
-            {[
-              { key: 'cricket', label: '🏏 Cricket' },
-              { key: 'football', label: '⚽ Football' },
-              { key: 'highlights', label: '🎬 Highlights' },
-            ].map(t => (
-              <button
-                key={t.key}
-                onClick={() => setSport(t.key)}
-                style={{ padding: '7px 18px', borderRadius: 20, border: sport === t.key ? 'none' : '1px solid #1a1a2e', background: sport === t.key ? '#e50914' : 'transparent', color: sport === t.key ? '#fff' : '#444', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}
-              >{t.label}</button>
+            {[{ key: 'cricket', label: '🏏 Cricket' }, { key: 'football', label: '⚽ Football' }, { key: 'highlights', label: '🎬 Highlights' }].map(t => (
+              <button key={t.key} onClick={() => setSport(t.key)}
+                style={{ padding: '7px 18px', borderRadius: 20, border: sport === t.key ? 'none' : '1px solid #1a1a2e', background: sport === t.key ? '#e50914' : 'transparent', color: sport === t.key ? '#fff' : '#444', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                {t.label}
+              </button>
             ))}
           </div>
         </div>
@@ -489,9 +456,7 @@ export default function SportsPage() {
         {/* ── CRICKET TAB ── */}
         {sport === 'cricket' && (
           <div>
-            {cricketLoading && (
-              <div style={{ textAlign: 'center', padding: 80, color: '#333' }}>🏏 Loading matches...</div>
-            )}
+            {cricketLoading && <div style={{ textAlign: 'center', padding: 80, color: '#333' }}>🏏 Loading matches...</div>}
             {!cricketLoading && (
               <>
                 {liveMatches.length > 0 && (
@@ -525,13 +490,10 @@ export default function SportsPage() {
                     <div style={{ fontSize: 9, color: '#333', fontWeight: 700, letterSpacing: 2, marginBottom: 12 }}>SELECT A CHANNEL — STREAM OPENS ON THIS PAGE</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {CRICKET_CHANNELS.map((ch, i) => (
-                        <button
-                          key={i}
-                          onClick={() => { setModalChannel(i); setModalOpen(true); }}
+                        <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }}
                           style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.borderColor = '#e50914'; e.currentTarget.style.background = 'rgba(229,9,20,0.08)'; }}
-                          onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}
-                        >
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}>
                           <div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{ch.label}</div>
                           <div style={{ fontSize: 9, color: '#444', marginTop: 2 }}>{ch.desc}</div>
                         </button>
@@ -561,19 +523,17 @@ export default function SportsPage() {
         {/* ── FOOTBALL TAB ── */}
         {sport === 'football' && (
           <div>
+            {/* Watch Live */}
             <div style={{ marginBottom: 28 }}>
               <SectionHdr color="#fff" label="📺 Watch Live Football" count={0} />
               <div style={{ background: '#0e0e1a', border: '1px solid #1a1a2e', borderRadius: 14, padding: '16px 18px' }}>
                 <div style={{ fontSize: 9, color: '#333', fontWeight: 700, letterSpacing: 2, marginBottom: 12 }}>SELECT A CHANNEL — STREAM OPENS ON THIS PAGE</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {FOOTBALL_CHANNELS.map((ch, i) => (
-                    <button
-                      key={i}
-                      onClick={() => { setModalChannel(i); setModalOpen(true); }}
+                    <button key={i} onClick={() => { setModalChannel(i); setModalOpen(true); }}
                       style={{ background: '#070710', border: '1px solid #1a1a2e', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', transition: 'all 0.15s' }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = '#e50914'; e.currentTarget.style.background = 'rgba(229,9,20,0.08)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}
-                    >
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = '#1a1a2e'; e.currentTarget.style.background = '#070710'; }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{ch.label}</div>
                       <div style={{ fontSize: 9, color: '#444', marginTop: 2 }}>{ch.desc}</div>
                     </button>
@@ -581,19 +541,23 @@ export default function SportsPage() {
                 </div>
               </div>
             </div>
+
             {footLoading && <div style={{ textAlign: 'center', padding: 60, color: '#333' }}>⚽ Loading matches...</div>}
-            {!footLoading && footballMatches.length > 0 && (
-              <div>
-                <SectionHdr color="#f5c518" label="📅 Upcoming Matches" count={footballMatches.length} />
+
+            {/* League-wise sections */}
+            {!footLoading && footballByLeague.length > 0 && footballByLeague.map(league => (
+              <div key={league.id} style={{ marginBottom: 32 }}>
+                <SectionHdr color="#f5c518" label={league.label} count={league.matches.length} />
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-                  {footballMatches.map(m => <FootballCard key={m.slug} match={m} />)}
+                  {league.matches.map((m, i) => <FootballCard key={m.slug || i} match={m} />)}
                 </div>
               </div>
-            )}
-            {!footLoading && footballMatches.length === 0 && (
+            ))}
+
+            {!footLoading && footballByLeague.length === 0 && (
               <div style={{ textAlign: 'center', padding: '40px 0', color: '#333' }}>
                 <div style={{ fontSize: 32, marginBottom: 10 }}>⚽</div>
-                <div style={{ fontSize: 14 }}>No upcoming matches scheduled</div>
+                <div style={{ fontSize: 14 }}>No upcoming matches in selected leagues</div>
               </div>
             )}
           </div>
