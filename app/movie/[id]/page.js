@@ -10,11 +10,12 @@ export default function MoviePage({ params }) {
   const { id } = use(params);
 
 const servers = [
-    { name: '▶ Server 1', url: `https://vidsrc.to/embed/movie/${id}` },
-    { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/movie/${id}` },
-    { name: '▶ Server 3', url: `https://vidsrc.xyz/embed/movie/${id}` },
-    { name: '▶ Server 4', url: `https://multiembed.mov/?video_id=${id}&tmdb=1` },
-    { name: '▶ Server 5', url: `https://autoembed.co/movie/tmdb/${id}` },
+  { name: '▶ Vidking', url: `https://vidking.net/${id}` },
+  { name: '▶ Server 1', url: `https://vidsrc.to/embed/movie/${id}` },
+  { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/movie/${id}` },
+  { name: '▶ Server 3', url: `https://vidsrc.xyz/embed/movie/${id}` },
+  { name: '▶ Server 4', url: `https://multiembed.mov/?video_id=${id}&tmdb=1` },
+  { name: '▶ Server 5', url: `https://autoembed.co/movie/tmdb/${id}` },
   ];
 
   useEffect(() => {
