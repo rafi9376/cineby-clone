@@ -10,7 +10,7 @@ export default function MoviePage({ params }) {
   const { id } = use(params);
 
 const servers = [
-  { name: '▶ Vidking', url: `https://vidking.net/${id}` },
+  { name: '▶ Vidking', url: `https://vidking.net/embed/${id}` },
   { name: '▶ Server 1', url: `https://vidsrc.to/embed/movie/${id}` },
   { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/movie/${id}` },
   { name: '▶ Server 3', url: `https://vidsrc.xyz/embed/movie/${id}` },
