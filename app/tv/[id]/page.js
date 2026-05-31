@@ -11,12 +11,13 @@ export default function TVPage({ params }) {
   const [episode, setEpisode] = useState(1);
   const { id } = use(params);
   const servers = [
-    { name: '▶ Server 1', url: `https://vidsrc.to/embed/tv/${id}` },
-    { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/tv/${id}` },
-    { name: '▶ Server 3', url: `https://vidsrc.xyz/embed/tv/${id}` },
-    { name: '▶ Server 4', url: `https://multiembed.mov/?video_id=${id}&tmdb=1&tv=1` },
-    { name: '▶ Server 5', url: `https://autoembed.co/tv/tmdb/${id}` },
-  ];
+  { name: '▶ Vidking', url: `https://www.vidking.net/embed/tv/${id}/${season}/${episode}` },
+  { name: '▶ Server 1', url: `https://vidsrc.to/embed/tv/${id}/${season}/${episode}` },
+  { name: '▶ Server 2', url: `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}` },
+  { name: '▶ Server 3', url: `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}` },
+  { name: '▶ Server 4', url: `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}` },
+  { name: '▶ Server 5', url: `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}` },
+];
 
   useEffect(() => {
     if (!id) return;
