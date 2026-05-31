@@ -72,6 +72,10 @@ const DISQUALIFY_WORDS = [
   'women', 'woman', 'female',
   'u19', 'u-19', 'under-19', 'under 19', 'under19', 'u17', 'u16',
   'emerging', 'lions', 'eagles', 'hawks',
+  ' a ', ' a$', 'india a', 'sri lanka a', 'pakistan a',
+  'australia a', 'england lions', 'bangladesh a',
+  'new zealand a', 'west indies a', 'south africa a',
+  'afghanistan a', 'zimbabwe a',
 ];
 function isAllowedNation(teamName) {
   if (!teamName) return false;
